@@ -61,4 +61,4 @@
 -NO FUNCTIONALITY
 
 
-[Kivy]: https://img.shields.io/badge/HoneyDoo-Kivy-blue?style=plastic&logo=data:HoneyDoo.png;base64
+[Kivy]: https://img.shields.io/badge/HoneyDoo-Kivy-blue?style=plastic&logo=appveyor
