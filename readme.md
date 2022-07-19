@@ -2,7 +2,7 @@
 
 ### Built with Kivy 2.1.0
 
-[![kivy][Kivy][kivy-url]]
+[![kivy][Kivy]][kivy-url]
 
 ### The Honey Do List app for couples
 
