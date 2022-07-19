@@ -2,6 +2,8 @@
 
 ### Built with Kivy 2.1.0
 
+*[![Kivy]]
+
 ### The Honey Do List app for couples
 
 -Create, manage, and complete tasks that you have either assigned 
