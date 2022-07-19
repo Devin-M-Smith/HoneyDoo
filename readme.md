@@ -2,7 +2,7 @@
 
 ### Built with Kivy 2.1.0
 
-* [![Kivy][Kivy]]
+* ![Kivy]
 
 ### The Honey Do List app for couples
 
@@ -61,4 +61,4 @@
 -NO FUNCTIONALITY
 
 
-[Kivy]: https://img.shields.io/badge/HoneyDoo-Kivy-blue?style=plastic&logo=data:/HoneyDoo.png
+[Kivy]: https://img.shields.io/badge/HoneyDoo-Kivy-blue?style=plastic&logo=data:HoneyDoo.png;base64
