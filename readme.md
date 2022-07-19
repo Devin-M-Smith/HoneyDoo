@@ -2,7 +2,7 @@
 
 ### Built with Kivy 2.1.0
 
-##Download for Android
+## Download for Android
 
 [![kivy][Kivy]][kivy-url]
 
