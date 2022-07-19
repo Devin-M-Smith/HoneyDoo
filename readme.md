@@ -16,16 +16,22 @@
 ### v0.0.1.3 BETA
 
 -Packaged and optimized for Android
+
 -Improved database communication
+
 -Splash Screen for Android
+
 -Loading Screen Adjustments
 
 
 ### v0.0.1.2 BETA
 
 -Added test button for 'Complete Task'
+
 -Improved database communication
+
 -Cannot submit task without all fields
+
 -Added 'Go Back' button
 
 
@@ -33,17 +39,21 @@
 ### v0.0.1.1 BETA
 
 -Create Task Screen
+
 -Submit Task to Database
 
 
 ## Features
-
 -Database Connectivity
+
 -Ability to Create new Tasks
 
-VIEWS:
-
--Main Task Screen -Sorts tasks by priority
--Create Task Screen -LIMITED FUNCTIONALITY -No User Assignment
--Registration Screen -NO FUNCTIONALITY
--Full Task List Screen -NO FUNCTIONALITY
+### VIEWS:
+### Main Task Screen 
+-Sorts tasks by priority
+### Create Task Screen 
+-LIMITED FUNCTIONALITY 
+### Registration Screen 
+-NO FUNCTIONALITY
+### Full Task List Screen 
+-NO FUNCTIONALITY
