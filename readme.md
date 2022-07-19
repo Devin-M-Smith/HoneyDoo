@@ -6,10 +6,10 @@
 ### The Honey Do List app for couples
 
 -Create, manage, and complete tasks that you have either assigned 
- to yourself or your partner has created for you. 
+ to yourself or your partner has created for you
 
 -HoneyDoo allows for priority assignment,
- letting the user know which tasks are most important to their partner. 
+ letting the user know which tasks are most important to their partner 
 
 
 ## Updates
