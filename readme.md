@@ -59,3 +59,6 @@
 -NO FUNCTIONALITY
 ### Full Task List Screen 
 -NO FUNCTIONALITY
+
+
+[Kivy]: https://img.shields.io/badge/HoneyDoo-Kivy-blue?style=plastic&logo=HoneyDoo.png
