@@ -1,4 +1,4 @@
-# HoneyDoo
+# HoneyDoo - v0.0.1.3
 
 ### Built with Kivy 2.1.0
 
