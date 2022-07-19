@@ -47,7 +47,7 @@ requirements = python3,kivy==2.1.0,mysql-connector,mysql-connector-python,androi
 #presplash.filename = %(source.dir)s/data/presplash.png
 
 # (str) Icon of the application
-#icon.filename = %(source.dir)s/data/icon.png
+icon.filename = "HoneyDoo.png"
 
 # (str) Supported orientation (one of landscape, sensorLandscape, portrait or all)
 orientation = portrait
@@ -80,7 +80,7 @@ fullscreen = 1
 # red, blue, green, black, white, gray, cyan, magenta, yellow, lightgray,
 # darkgray, grey, lightgrey, darkgrey, aqua, fuchsia, lime, maroon, navy,
 # olive, purple, silver, teal.
-#android.presplash_color = #4DFFB8
+android.presplash_color = #006633
 
 # (string) Presplash animation using Lottie format.
 # see https://lottiefiles.com/ for examples and https://airbnb.design/lottie/
@@ -105,7 +105,7 @@ android.api = 33
 android.minapi = 28
 
 # (int) Android SDK version to use
-android.sdk = 28
+#android.sdk = 28
 
 # (str) Android NDK version to use
 #android.ndk = 19b
