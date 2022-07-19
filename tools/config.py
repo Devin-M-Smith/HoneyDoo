@@ -1,0 +1,2 @@
+mydb = None
+task = None

@@ -1,0 +1,326 @@
+#:import Factory kivy.factory.Factory
+
+<BackgroundColor@Widget>
+    background_color: 1, 1, 1, 0
+    canvas.before:
+        Color:
+            rgba: root.background_color
+        Rectangle:
+            size: self.size
+            pos: self.pos
+
+<SpinnerDrops@SpinnerOption>
+    background_color: (0, .4, .2, 1) if self.state == 'down' else (0, .4, .2, 1)
+    background_normal: ''
+    background_down: ''
+    font_size: '30sp'
+    color: .8, 1, .9, 1
+
+<HoneyDooSpinner@Spinner+BackgroundColor>
+    background_color: 0, .4, .2, .6
+    background_normal: ''
+    background_down: ''
+    font_size: '30sp'
+    bold: True
+    option_cls: Factory.get("SpinnerDrops")
+    color: .8, 1, .9, 1
+
+<LoadContent@GridLayout+BackgroundColor>
+    background_color: 0, .4, .2, 1
+
+<LoadTitle@Label+BackgroundColor>
+    color: .4, 1, .7, 1
+    font_size: '64sp'
+
+<LoadByline@Label+BackgroundColor>
+    color: .4, 1, .7, .2
+    font_size: '24sp'
+
+
+
+<MainDisplay@GridLayout+BackgroundColor>
+    background_color: .4, 1, .7, 1
+
+<Menu@GridLayout+BackgroundColor>
+    background_color: 1, 1, 1, 1
+
+<MenuItem@Button+BackgroundColor>
+    text_size: self.size
+	bold: True
+	halign: 'center'
+    valign: 'middle'
+	color: .8, 1, .9, 1
+	background_color: 0, 1, .52, 1
+
+<SubmitButton@Button+BackgroundColor>
+    text_size: self.size
+	bold: True
+	halign: 'center'
+    valign: 'middle'
+	color: .8, 1, .9, 1
+	background_color: 0, 1, .52, .9
+
+<BackButton@Button+BackgroundColor>
+    text_size: self.size
+	bold: True
+	halign: 'center'
+    valign: 'middle'
+	color: 1, 1, .9, 1
+	background_color: 0, 1, .52, 1
+
+<HeaderGrid@GridLayout+BackgroundColor>
+    cols: 2
+
+<Header@Label+BackgroundColor>
+	background_color: .8, 1, .9, 1
+    color: 0, 0, 0, 1
+    bold: True
+
+<Priority@Label+BackgroundColor>
+	background_color: .8, 1, .9, 1
+    color: 0, 0, 0, 1
+    bold: True
+
+<Content@Label+BackgroundColor>
+	background_color: .4, 1, .7, 1
+
+<NewTaskHead@Label+BackgroundColor>
+    color: 0, .4, .2, 1
+    bold: True
+    height: '30sp'
+	background_color: .4, 1, .7, 1
+
+<NewTaskInput@TextInput>
+    multiline: False
+    halign: 'center'
+    valign: 'middle'
+    font_size: self.parent.height/11
+    background_color: .8, 1, .9, 1
+
+<RegisterContent@Label+BackgroundColor>
+    color: 0, .4, .2, 1
+    bold: True
+    font_size: '32sp'
+	background_color: .4, 1, .7, 1
+
+<Input@TextInput>
+    multiline: False
+    halign: 'center'
+    size_hint: .3, .4
+    background_color: .8, 1, .9, 1
+
+
+
+<LoadWindow>
+    name: 'load'
+    BoxLayout:
+        orientation: 'vertical'
+        LoadContent:
+            cols: 1
+            rows: 3
+            LoadTitle:
+                text: 'HoneyDoo'
+            LoadByline:
+                id: connect_status
+                color: 1, 1, 1, 1
+                size_hint_y: .2
+            LoadByline:
+                text: 'Shanor-Smith'
+                size_hint_y: .2
+
+<MainWindow>
+    name: 'main'
+    on_enter: root.update()
+    BoxLayout:
+        orientation: 'horizontal'
+        ScrollView:
+            size_hint_x: .3
+            Menu:
+                size_hint_y: root.height/(root.height/(12/6))
+                cols: 1
+                MenuItem:
+                    font_size: '80sp'
+                    text: '+'
+                    on_release:
+                        app.root.current = root.plus
+                        root.manager.transition.direction = "down"
+                MenuItem:
+                    id: task1
+                    on_release:
+                        root.update_display('task1')
+                MenuItem:
+                    id: task2
+                    on_release:
+                        root.update_display('task2')
+                MenuItem:
+                    id: task3
+                    on_release:
+                        root.update_display('task3')
+                MenuItem:
+                    id: task4
+                    on_release:
+                        root.update_display('task4')
+                MenuItem:
+                    id: task5
+                    on_release:
+                        root.update_display('task5')
+                MenuItem:
+                    id: task6
+                    on_release:
+                        root.update_display('task6')
+                MenuItem:
+                    id: task7
+                    on_release:
+                        root.update_display('task7')
+                MenuItem:
+                    id: task8
+                    on_release:
+                        root.update_display('task8')
+                MenuItem:
+                    id: task9
+                    on_release:
+                        root.update_display('task9')
+                MenuItem:
+                    id: task10
+                    on_release:
+                        root.update_display('task10')
+                MenuItem:
+                    text: 'Full Task\nList'
+                    on_release:
+                        app.root.current = "second"
+                        root.manager.transition.direction = "left"
+
+        MainDisplay:
+            cols: 1
+            rows: 3
+            size: self.size
+            HeaderGrid:
+                Header:
+                    text_size: self.width, None
+                    halign: 'center'
+                    font_size: '24sp'
+                    id: task_header
+                Priority:
+                    halign: 'center'
+                    size_hint_x: .5
+                    id: priority
+            Content:
+                padding: 5, 5
+                text_size: self.size
+                valign: 'top'
+                id: task_description
+                size_hint: self.width, 5
+                color: 0, 0, 0, 1
+            SubmitButton:
+                size_hint: self.width, .5
+                text: 'test'
+
+
+<TaskList>
+    name: 'second'
+    BackButton:
+        text: "Go Back"
+        on_release:
+            app.root.current = "main"
+            root.manager.transition.direction = "right"
+
+
+<NewTask>
+    name: 'addTask'
+    on_pre_enter:
+        self.ids.assigned.text = 'Select Asignee'
+        self.ids.priority.text = 'Select Priority'
+        self.ids.task_name.text = ''
+        self.ids.description.text = ''
+    BoxLayout:
+        orientation: 'vertical'
+        padding: '4sp', '4sp'
+        NewTaskHead:
+            color: 0, 0, 0, 1
+            font_size: '40sp'
+            bold: True
+            text: 'Create New Task'
+        MainDisplay:
+            cols: 1
+            rows: 10
+            spacing: 0, '4sp'
+            size_hint_y: 4
+            HoneyDooSpinner:
+                id: assigned
+                values: ['USER 1', 'USER 2']
+            NewTaskInput:
+                id: task_name
+                hint_text: 'Task Name'
+                size_hint_y: 1.1
+            NewTaskInput:
+                id: description
+                hint_text: '\nDescription'
+                multiline: True
+                size_hint_y: 4
+            HoneyDooSpinner:
+                id: priority
+                values: ['LOW', 'NORMAL', 'HIGH', 'MAJOR']
+        SubmitButton:
+            size_hint_y: .8
+            text: "Submit"
+            on_release:
+                app.root.current = root.submitTask(assigned.text, task_name.text, description.text, priority.text)
+                root.manager.transition.direction = "up"
+        BackButton:
+            size_hint_y: .8
+            text: "Go Back"
+            on_release:
+                app.root.current = 'main'
+                root.manager.transition.direction = "up"
+
+<Register>
+    name: 'register'
+    MainDisplay:
+        cols: 1
+        rows: 10
+        Header:
+            color: 0, 0, 0, 1
+            text: "Register\nNew Account"
+            font_size: '40sp'
+            halign: "center"
+            bold: True
+        RegisterContent:
+            text: 'Email'
+        Input:
+            id: Email
+        RegisterContent:
+            text: 'Username'
+        Input:
+            id: Username
+        RegisterContent:
+            text: 'Password'
+        Input:
+            id: Password
+            password: True
+        RegisterContent:
+            text: 'Confirm Password'
+        Input:
+            id: Password2
+            password: True
+        MenuItem:
+            text: "Submit"
+            on_release:
+                app.root.current = "main"
+                root.manager.transition.direction = "up"
+
+        
+<RegisterRequest>
+    Label:
+        color: .8, 1, .9, 1
+        text: "Please Register for HoneyDoo"
+        size_hint: 0.2, 0.1
+        pos_hint: {"x": 0.3, "top": 0.8}
+
+<DataError>
+    Label:
+        id: error
+        text_size: self.width, None
+        color: .8, 1, .9, 1
+        size_hint: 1, 0.1
+        padding_x: 5
+        pos_hint: {"x": 0, "top": 0.8}
