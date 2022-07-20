@@ -129,9 +129,12 @@
                 text: 'Shanor-Smith'
                 size_hint_y: .2
 
+<Refresh>
+    name: 'refresh'
+    transition: NoTransition()
+
 <MainWindow>
     name: 'main'
-    on_enter: root.update()
     BoxLayout:
         orientation: 'horizontal'
         ScrollView:
@@ -214,7 +217,9 @@
                 color: 0, 0, 0, 1
             SubmitButton:
                 size_hint: self.width, .5
-                text: 'test'
+                text: 'Complete Task'
+                on_release:
+                    root.completeTaskButton()
 
 
 <TaskList>
@@ -325,3 +330,21 @@
         size_hint: 1, 0.1
         padding_x: 5
         pos_hint: {"x": 0, "top": 0.8}
+
+<TaskPopUp@Popup>
+    GridLayout:
+        cols: 2
+        SubmitButton:
+            background_normal: ''
+            color: 0, .4, .2, 1
+            text: 'Yes'
+            on_release:
+                root.updateCompleteTask()
+                root.dismiss()
+                app.root.current = 'refresh'
+                app.root.current = 'main'
+        SubmitButton:
+            text: 'No'
+            color: 0, 1, .52, .9
+            on_release:
+                root.dismiss()
