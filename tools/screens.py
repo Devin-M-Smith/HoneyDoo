@@ -10,7 +10,8 @@ from kivy.app import App
 app = App.get_running_app()
 
 
-
+class Refresh(Screen):
+    pass
 
 #Main Display, Task Bar and tasks ----Moved to separate Module
 class MainWindow(Screen):
@@ -23,15 +24,12 @@ class MainWindow(Screen):
         priorityLabel = ['LOW', 'NORMAL', 'HIGH', 'MAJOR']
         return priorityLabel[priorityNumber]
 
-    def update(self):
-        
+    def on_enter(self):
         try:
             c = config.mydb.cursor(buffered=True)
-            print('Trying')
             c.reset()
         except:
             config.mydb = HoneyDooSQL.dbSetup()
-            print('Failed')
         self.plus = checkSave.plus()
         config.task = HoneyDooSQL.readTasks(config.mydb)
 
@@ -39,18 +37,40 @@ class MainWindow(Screen):
         while i < 10:
             self.ids[list(self.ids)[i]].text = str(config.task[i]['TASK_NAME'])
             i+=1
-
+        config.display_task = list(self.ids).index('task1')
         self.ids.task_header.text = str(config.task[0]['TASK_NAME'])
         self.ids.priority.text = 'Priority\n' + self.checkPriority(config.task[0]['PRIORITY'])
         self.ids.task_description.text = str(config.task[0]['DESCRIPTION'])
 
     def update_display(self, id):
-        display_task = list(self.ids).index(str(id))
-        
-        self.ids.task_header.text = str(config.task[display_task]['TASK_NAME'])
-        self.ids.task_description.text = str(config.task[display_task]['DESCRIPTION'])
-        self.ids.priority.text = 'Priority\n' + self.checkPriority(config.task[display_task]['PRIORITY'])
+        config.display_task = list(self.ids).index(str(id))
+        self.ids.task_header.text = str(config.task[config.display_task]['TASK_NAME'])
+        self.ids.task_description.text = str(config.task[config.display_task]['DESCRIPTION'])
+        self.ids.priority.text = 'Priority\n' + self.checkPriority(config.task[config.display_task]['PRIORITY'])
+    
+    def completeTaskButton(self):
+        window = TaskPopUp(
+            title = "Mark Task as Complete?",
+            title_color = (.4, 1, .7, 1),
+            title_size = '28sp', 
+            separator_color = (0, .4, .2, 1),
+            auto_dismiss = False, 
+            background_color = (0, .4, .2, .5),
+            size_hint = (None, None), 
+            size = ('300sp', '150sp'))
+        window.open()
     pass
+
+class TaskPopUp(Popup):
+    def updateCompleteTask(self):
+        print(str(config.task[config.display_task]['TASK_ID']))
+        result = HoneyDooSQL.completeTask(config.mydb, config.task[config.display_task]['TASK_ID'])
+        if result == '':
+            pass
+        else:
+            global dataError
+            dataError = DataError()
+            errorPopUp(result)
 
 #Full Task List
 class TaskList(Screen):
@@ -133,4 +153,3 @@ def errorPopUp(result):
         size_hint = (None, None), 
         size = ('300sp', '150sp'))
     window.open()
-

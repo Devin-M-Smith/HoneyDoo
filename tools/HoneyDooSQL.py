@@ -38,13 +38,14 @@ def dbSetup():
     return mydb
     
 def readTasks(mydb):
+    mydb.commit()
     c = mydb.cursor(dictionary=True)
     c.execute("""
         SELECT * FROM TASKS
+        WHERE STATUS = 1
         ORDER BY PRIORITY DESC, TASK_NAME
     """)
     records = c.fetchall()
-    print(records)
     task = []
     recordCount = 0
     for record in records:
@@ -54,7 +55,7 @@ def readTasks(mydb):
         task.append(records[taskCount])
         taskCount += 1
     while taskCount < 10:
-        task.append({'TASK_NAME' : 'No Task', 'DESCRIPTION': 'No Task', 'PRIORITY': 0})
+        task.append({'TASK_ID': 0, 'TASK_NAME' : 'No Task', 'DESCRIPTION': 'No Task', 'PRIORITY': 0})
         taskCount += 1
     return task
 
@@ -63,10 +64,10 @@ def writeTask(mydb, user, taskName, taskDetail, taskPriority):
     try:
         c.execute("""
             INSERT INTO TASKS
-            (TASK_NAME, DESCRIPTION, PRIORITY, DATE_CREATED)
+            (TASK_NAME, DESCRIPTION, PRIORITY, STATUS, DATE_CREATED)
             VALUES
-            (%s, %s, %s, %s)
-        """, (taskName, taskDetail, taskPriority, datetime.date.today()))
+            (%s, %s, %s, %s, %s)
+        """, (taskName, taskDetail, taskPriority, 1, datetime.date.today()))
         mydb.commit()
         return ''
     except Error as E:
@@ -74,3 +75,17 @@ def writeTask(mydb, user, taskName, taskDetail, taskPriority):
     except:
         return 'Unknown Error'
     
+def completeTask(mydb, taskID):
+    c = mydb.cursor(dictionary=True)
+    try:
+        c.execute("""
+            UPDATE TASKS
+            SET STATUS = 0
+            WHERE TASK_ID = %s;
+        """, (taskID,))
+        mydb.commit()
+        return ''
+    except Error as E:
+        return E
+    except:
+        return 'Unknown Error'
