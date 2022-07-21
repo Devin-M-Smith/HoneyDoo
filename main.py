@@ -71,11 +71,10 @@ class HoneyDoo(App):
         return wm
 
     def on_pause(self):
-        wm.clear_widgets()
         return True
 
     def on_resume(self):
-        wm.switch_to(LoadWindow())
+        wm.current = 'load'
         pass
 
 if __name__ == '__main__':
