@@ -131,10 +131,10 @@
 
 <Refresh>
     name: 'refresh'
-    transition: NoTransition()
 
 <MainWindow>
     name: 'main'
+    on_enter: root.update()
     BoxLayout:
         orientation: 'horizontal'
         ScrollView:

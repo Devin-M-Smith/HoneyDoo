@@ -24,7 +24,7 @@ class MainWindow(Screen):
         priorityLabel = ['LOW', 'NORMAL', 'HIGH', 'MAJOR']
         return priorityLabel[priorityNumber]
 
-    def on_enter(self):
+    def update(self):
         try:
             c = config.mydb.cursor(buffered=True)
             c.reset()
@@ -37,16 +37,14 @@ class MainWindow(Screen):
         while i < 10:
             self.ids[list(self.ids)[i]].text = str(config.task[i]['TASK_NAME'])
             i+=1
-        config.display_task = list(self.ids).index('task1')
-        self.ids.task_header.text = str(config.task[0]['TASK_NAME'])
-        self.ids.priority.text = 'Priority\n' + self.checkPriority(config.task[0]['PRIORITY'])
-        self.ids.task_description.text = str(config.task[0]['DESCRIPTION'])
+        id = 'task1'
+        MainWindow.update_display(self, id)
 
     def update_display(self, id):
-        config.display_task = list(self.ids).index(str(id))
-        self.ids.task_header.text = str(config.task[config.display_task]['TASK_NAME'])
-        self.ids.task_description.text = str(config.task[config.display_task]['DESCRIPTION'])
-        self.ids.priority.text = 'Priority\n' + self.checkPriority(config.task[config.display_task]['PRIORITY'])
+        config.displayTask = list(self.ids).index(str(id))
+        self.ids.task_header.text = str(config.task[config.displayTask]['TASK_NAME'])
+        self.ids.task_description.text = str(config.task[config.displayTask]['DESCRIPTION'])
+        self.ids.priority.text = 'Priority\n' + self.checkPriority(config.task[config.displayTask]['PRIORITY'])
     
     def completeTaskButton(self):
         window = TaskPopUp(
@@ -63,8 +61,8 @@ class MainWindow(Screen):
 
 class TaskPopUp(Popup):
     def updateCompleteTask(self):
-        print(str(config.task[config.display_task]['TASK_ID']))
-        result = HoneyDooSQL.completeTask(config.mydb, config.task[config.display_task]['TASK_ID'])
+        print(str(config.task[config.displayTask]['TASK_ID']))
+        result = HoneyDooSQL.completeTask(config.mydb, config.task[config.displayTask]['TASK_ID'])
         if result == '':
             pass
         else:
