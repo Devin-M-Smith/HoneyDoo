@@ -35,7 +35,7 @@ class MainWindow(Screen):
 
         i = 0
         while i < 10:
-            self.ids[list(self.ids)[i]].text = str(config.task[i]['TASK_NAME'])
+            self.ids[list(self.ids)[i]].text = str(config.task[i]['TASK_NAME']).upper()
             i+=1
         id = 'task1'
         MainWindow.update_display(self, id)
@@ -44,7 +44,7 @@ class MainWindow(Screen):
         config.displayTask = list(self.ids).index(str(id))
         self.ids.task_header.text = str(config.task[config.displayTask]['TASK_NAME'])
         self.ids.task_description.text = str(config.task[config.displayTask]['DESCRIPTION'])
-        self.ids.priority.text = 'Priority\n' + self.checkPriority(config.task[config.displayTask]['PRIORITY'])
+        self.ids.priority.text = '[color=006633][size=10sp]' + str(config.task[config.displayTask]['DATE_CREATED']) + '[/size][/color]' + '\n[u]PRIORITY[/u]\n' + self.checkPriority(config.task[config.displayTask]['PRIORITY'])
     
     def completeTaskButton(self):
         window = TaskPopUp(

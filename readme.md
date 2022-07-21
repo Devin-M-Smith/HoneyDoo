@@ -13,9 +13,12 @@
 
 ## Updates
 
+* Currently issue where app will crash when screen was turned off for a period of time
 
 ### v0.0.1.4 BETA
 
+* Adjusted UI for consistency
+* Display Tasks According to Date first Priority second
 * Added functionality to Complete Task Button
 * Adjusted sizes for adaptable display
 * Temporary loading screen to force update of main display, will look for better solution

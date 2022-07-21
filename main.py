@@ -6,7 +6,6 @@ import tools.checkSave as checkSave
 import tools.HoneyDooSQL as HoneyDooSQL
 from tools.screens import MainWindow, TaskList, Register, NewTask, Refresh
 import tools.config as config
-from time import sleep
 from kivy.utils import platform
 
 kv = Builder.load_file('honeydoolayout.kv')
@@ -39,7 +38,7 @@ class LoadWindow(Screen):
                     wm.add_widget(screen)
                 Clock.schedule_once(lambda dt: remove_splash_custom())
                 self.ids.connect_status.text = 'The Honey-Do List App :)'
-                Clock.schedule_once(lambda dt: next(self), 2)
+                Clock.schedule_once(lambda dt: nextScreen(self), 2)
 
         def dbLoad():
             try:
@@ -48,7 +47,7 @@ class LoadWindow(Screen):
                 config.mydb = None
             return config.mydb
 
-        def next(self):
+        def nextScreen(self):
             wm.current = checkSave.startWindow()
             wm.transition = SlideTransition()
             return
@@ -70,6 +69,14 @@ wm.switch_to(LoadWindow())
 class HoneyDoo(App):
     def build(self):
         return wm
+
+    def on_pause(self):
+        wm.clear_widgets()
+        return True
+
+    def on_resume(self):
+        wm.switch_to(LoadWindow())
+        pass
 
 if __name__ == '__main__':
     app = HoneyDoo()

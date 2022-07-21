@@ -43,23 +43,28 @@ def readTasks(mydb):
     c.execute("""
         SELECT * FROM TASKS
         WHERE STATUS = 1
-        ORDER BY PRIORITY DESC, TASK_NAME
+        ORDER BY DATE_CREATED ASC, PRIORITY DESC
     """)
     records = c.fetchall()
     task = []
+
     recordCount = 0
     for record in records:
         recordCount += 1
+
     taskCount = 0
     while taskCount < recordCount:
         task.append(records[taskCount])
         taskCount += 1
+
     while taskCount < 10:
-        task.append({'TASK_ID': 0, 'TASK_NAME' : 'No Task', 'DESCRIPTION': 'No Task', 'PRIORITY': 0})
+        task.append({'TASK_ID': 0, 'TASK_NAME' : 'NO TASK', 'DESCRIPTION': 'NO TASK', 'PRIORITY': 0, 'DATE_CREATED': datetime.date.today()})
         taskCount += 1
+
     return task
 
 def writeTask(mydb, user, taskName, taskDetail, taskPriority):
+
     c = mydb.cursor(dictionary=True)
     try:
         c.execute("""
@@ -67,7 +72,7 @@ def writeTask(mydb, user, taskName, taskDetail, taskPriority):
             (TASK_NAME, DESCRIPTION, PRIORITY, STATUS, DATE_CREATED)
             VALUES
             (%s, %s, %s, %s, %s)
-        """, (taskName, taskDetail, taskPriority, 1, datetime.date.today()))
+        """, (taskName.upper(), taskDetail, taskPriority, 1, datetime.date.today()))
         mydb.commit()
         return ''
     except Error as E:

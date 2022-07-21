@@ -36,7 +36,10 @@
     color: .4, 1, .7, .2
     font_size: '24sp'
 
-
+<RefreshLabel@Label+BackgroundColor>
+    background_color: 0, .4, .2, 1
+    color: .4, 1, .7, 1
+    font_size: '64sp'
 
 <MainDisplay@GridLayout+BackgroundColor>
     background_color: .4, 1, .7, 1
@@ -131,6 +134,11 @@
 
 <Refresh>
     name: 'refresh'
+    on_enter:
+        app.root.current = 'main'
+        root.manager.transition.direction = "up"
+    RefreshLabel:
+        text: 'LOADING'
 
 <MainWindow>
     name: 'main'
@@ -189,7 +197,7 @@
                     on_release:
                         root.update_display('task10')
                 MenuItem:
-                    text: 'Full Task\nList'
+                    text: 'FULL TASK\nLIST'
                     on_release:
                         app.root.current = "second"
                         root.manager.transition.direction = "left"
@@ -207,6 +215,7 @@
                 Priority:
                     halign: 'center'
                     size_hint_x: .5
+                    markup: True
                     id: priority
             Content:
                 padding: 5, 5
@@ -217,7 +226,7 @@
                 color: 0, 0, 0, 1
             SubmitButton:
                 size_hint: self.width, .5
-                text: 'Complete Task'
+                text: 'COMPLETE TASK'
                 on_release:
                     root.completeTaskButton()
 
@@ -225,7 +234,7 @@
 <TaskList>
     name: 'second'
     BackButton:
-        text: "Go Back"
+        text: "GO BACK"
         on_release:
             app.root.current = "main"
             root.manager.transition.direction = "right"
@@ -234,8 +243,8 @@
 <NewTask>
     name: 'addTask'
     on_pre_enter:
-        self.ids.assigned.text = 'Select Asignee'
-        self.ids.priority.text = 'Select Priority'
+        self.ids.assigned.text = 'SELECT ASSIGNEE'
+        self.ids.priority.text = 'SELECT PRIORITY'
         self.ids.task_name.text = ''
         self.ids.description.text = ''
     BoxLayout:
@@ -245,7 +254,7 @@
             color: 0, 0, 0, 1
             font_size: '40sp'
             bold: True
-            text: 'Create New Task'
+            text: 'CREATE NEW TASK'
         MainDisplay:
             cols: 1
             rows: 10
@@ -256,11 +265,11 @@
                 values: ['USER 1', 'USER 2']
             NewTaskInput:
                 id: task_name
-                hint_text: 'Task Name'
+                hint_text: 'TASK NAME'
                 size_hint_y: 1.1
             NewTaskInput:
                 id: description
-                hint_text: '\nDescription'
+                hint_text: '\nDESCRIPTION'
                 multiline: True
                 size_hint_y: 4
             HoneyDooSpinner:
@@ -268,13 +277,13 @@
                 values: ['LOW', 'NORMAL', 'HIGH', 'MAJOR']
         SubmitButton:
             size_hint_y: .8
-            text: "Submit"
+            text: "SUBMIT"
             on_release:
                 app.root.current = root.submitTask(assigned.text, task_name.text, description.text, priority.text)
                 root.manager.transition.direction = "up"
         BackButton:
             size_hint_y: .8
-            text: "Go Back"
+            text: "GO BACK"
             on_release:
                 app.root.current = 'main'
                 root.manager.transition.direction = "up"
@@ -286,30 +295,30 @@
         rows: 10
         Header:
             color: 0, 0, 0, 1
-            text: "Register\nNew Account"
+            text: "REGISTER\nNEW ACCOUNT"
             font_size: '40sp'
             halign: "center"
             bold: True
         RegisterContent:
-            text: 'Email'
+            text: 'EMAIL'
         Input:
             id: Email
         RegisterContent:
-            text: 'Username'
+            text: 'USERNAME'
         Input:
             id: Username
         RegisterContent:
-            text: 'Password'
+            text: 'PASSWORD'
         Input:
             id: Password
             password: True
         RegisterContent:
-            text: 'Confirm Password'
+            text: 'CONFIRM PASSWORD'
         Input:
             id: Password2
             password: True
         MenuItem:
-            text: "Submit"
+            text: "SUBMIT"
             on_release:
                 app.root.current = "main"
                 root.manager.transition.direction = "up"
@@ -342,7 +351,7 @@
                 root.updateCompleteTask()
                 root.dismiss()
                 app.root.current = 'refresh'
-                app.root.current = 'main'
+                app.root.transition.direction = "up"
         SubmitButton:
             text: 'No'
             color: 0, 1, .52, .9
