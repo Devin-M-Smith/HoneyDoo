@@ -57,7 +57,6 @@ class LoadWindow(Screen):
         Clock.schedule_once(lambda dt: self.load(), 4)
 
 
-
 #Baseclass window
 class WindowManager(ScreenManager):
     pass
