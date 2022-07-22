@@ -74,7 +74,6 @@ class HoneyDoo(App):
         return True
 
     def on_resume(self):
-        wm.current = 'load'
         pass
 
 if __name__ == '__main__':

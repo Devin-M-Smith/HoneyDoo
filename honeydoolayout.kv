@@ -147,6 +147,8 @@
         orientation: 'horizontal'
         ScrollView:
             size_hint_x: .3
+            bar_width: 0
+            effect_cls: 'OpacityScrollEffect'
             Menu:
                 size_hint_y: root.height/(root.height/(12/6))
                 cols: 1
@@ -207,6 +209,7 @@
             rows: 3
             size: self.size
             HeaderGrid:
+                size_hint_y: 1.1
                 Header:
                     text_size: self.width, None
                     halign: 'center'
@@ -218,7 +221,7 @@
                     markup: True
                     id: priority
             Content:
-                padding: 5, 5
+                padding: 10, 10
                 text_size: self.size
                 valign: 'top'
                 id: task_description
