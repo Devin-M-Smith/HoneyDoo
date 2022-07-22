@@ -15,6 +15,7 @@ class Refresh(Screen):
 
 #Main Display, Task Bar and tasks ----Moved to separate Module
 class MainWindow(Screen):
+
     def on_pre_enter(self):
         self.ids.task_header.text = 'LOADING...'
         self.ids.task_description.text = ''
@@ -37,6 +38,7 @@ class MainWindow(Screen):
         while i < 10:
             self.ids[list(self.ids)[i]].text = str(config.task[i]['TASK_NAME']).upper()
             i+=1
+
         id = 'task1'
         MainWindow.update_display(self, id)
 
@@ -47,6 +49,13 @@ class MainWindow(Screen):
         self.ids.priority.text = '[color=006633][size=10sp]' + str(config.task[config.displayTask]['DATE_CREATED']) + '[/size][/color]' + '\n[u]PRIORITY[/u]\n' + self.checkPriority(config.task[config.displayTask]['PRIORITY'])
     
     def completeTaskButton(self):
+
+        try:
+            c = config.mydb.cursor(buffered=True)
+            c.reset()
+        except:
+            config.mydb = HoneyDooSQL.dbSetup()
+
         window = TaskPopUp(
             title = "Mark Task as Complete?",
             title_color = (.4, 1, .7, 1),
@@ -60,8 +69,8 @@ class MainWindow(Screen):
     pass
 
 class TaskPopUp(Popup):
+
     def updateCompleteTask(self):
-        print(str(config.task[config.displayTask]['TASK_ID']))
         result = HoneyDooSQL.completeTask(config.mydb, config.task[config.displayTask]['TASK_ID'])
         if result == '':
             pass
@@ -79,6 +88,7 @@ class RegisterRequest(FloatLayout):
     pass
 
 def RegisterPopUp():
+
     show = RegisterRequest()
     window = Popup(
         title = "New User",
@@ -92,6 +102,7 @@ def RegisterPopUp():
     window.open()
 
 class Register(Screen):
+
     def on_enter(self):
         RegisterPopUp()
     pass
@@ -99,21 +110,20 @@ class Register(Screen):
 
 #New Task Screen
 class NewTask(Screen):
-    def priority_number(self, text):
-        try:
-            priority = self.ids.priority.values.index(text)
-        except:
-            priority = -1
-        print(priority)
+
     def submitTask(self, user, task_name, description, priority):
+
+        try:
+            c = config.mydb.cursor(buffered=True)
+            c.reset()
+        except:
+            config.mydb = HoneyDooSQL.dbSetup()
+
         try:
             priority = self.ids.priority.values.index(priority)
         except:
             priority = -1
-        print(user)
-        print(task_name)
-        print(description)
-        print(priority)
+
         if (
             task_name == ''
             or
@@ -124,7 +134,6 @@ class NewTask(Screen):
         else:
             result = HoneyDooSQL.writeTask(config.mydb, user, task_name, description, priority)
 
-        
         if result == '':
             pass
             return 'main'
@@ -139,6 +148,7 @@ class DataError(FloatLayout): #Data entry Error Popup
     pass
 
 def errorPopUp(result):
+    
     dataError.ids.error.text = str(result)
     show = dataError
     window = Popup(
