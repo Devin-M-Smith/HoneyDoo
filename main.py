@@ -31,7 +31,7 @@ class LoadWindow(Screen):
             if config.mydb == None:
                 Clock.schedule_once(lambda dt: remove_splash_custom())
                 self.ids.connect_status.text = 'Unable to Connect'
-                Clock.schedule_once(lambda dt: app.stop(), 7)#7 
+                Clock.schedule_once(lambda dt: app.stop(), 7)
             else:
                 screens = [Register(), MainWindow(), TaskList(), NewTask(), Refresh()]
                 for screen in screens:
@@ -54,7 +54,7 @@ class LoadWindow(Screen):
         windowAfterLoad()
 
     def on_enter(self):
-        Clock.schedule_once(lambda dt: self.load(), 4)#4
+        Clock.schedule_once(lambda dt: self.load(), 4)
 
 
 
@@ -69,12 +69,6 @@ wm.switch_to(LoadWindow())
 class HoneyDoo(App):
     def build(self):
         return wm
-
-    def on_pause(self):
-        return True
-
-    def on_resume(self):
-        pass
 
 if __name__ == '__main__':
     app = HoneyDoo()

@@ -38,13 +38,16 @@ def dbSetup():
     return mydb
     
 def readTasks(mydb):
+
     mydb.commit()
     c = mydb.cursor(dictionary=True)
+
     c.execute("""
         SELECT * FROM TASKS
         WHERE STATUS = 1
         ORDER BY DATE_CREATED ASC, PRIORITY DESC
     """)
+
     records = c.fetchall()
     task = []
 
@@ -60,19 +63,19 @@ def readTasks(mydb):
     while taskCount < 10:
         task.append({'TASK_ID': 0, 'TASK_NAME' : 'NO TASK', 'DESCRIPTION': 'NO TASK', 'PRIORITY': 0, 'DATE_CREATED': datetime.date.today()})
         taskCount += 1
-
     return task
 
 def writeTask(mydb, user, taskName, taskDetail, taskPriority):
 
     c = mydb.cursor(dictionary=True)
+
     try:
         c.execute("""
             INSERT INTO TASKS
             (TASK_NAME, DESCRIPTION, PRIORITY, STATUS, DATE_CREATED)
             VALUES
             (%s, %s, %s, %s, %s)
-        """, (taskName.upper(), taskDetail, taskPriority, 1, datetime.date.today()))
+        """, (taskName.upper(), taskDetail.upper(), taskPriority, 1, datetime.date.today()))
         mydb.commit()
         return ''
     except Error as E:
@@ -81,7 +84,9 @@ def writeTask(mydb, user, taskName, taskDetail, taskPriority):
         return 'Unknown Error'
     
 def completeTask(mydb, taskID):
+
     c = mydb.cursor(dictionary=True)
+
     try:
         c.execute("""
             UPDATE TASKS
