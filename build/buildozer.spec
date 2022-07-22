@@ -47,7 +47,7 @@ requirements = python3,kivy==2.1.0,mysql-connector,mysql-connector-python,androi
 #presplash.filename = %(source.dir)s/data/presplash.png
 
 # (str) Icon of the application
-icon.filename = "HoneyDoo.png"
+icon.filename = "assets/HoneyDoo.png"
 
 # (str) Supported orientation (one of landscape, sensorLandscape, portrait or all)
 orientation = portrait
@@ -86,7 +86,7 @@ android.presplash_color = #006633
 # see https://lottiefiles.com/ for examples and https://airbnb.design/lottie/
 # for general documentation.
 # Lottie files can be created using various tools, like Adobe After Effect or Synfig.
-android.presplash_lottie = "Splash.json"
+android.presplash_lottie = "assets/Splash.json"
 
 # (str) Adaptive icon of the application (used if Android API level is 26+ at runtime)
 #icon.adaptive_foreground.filename = %(source.dir)s/data/icon_fg.png
