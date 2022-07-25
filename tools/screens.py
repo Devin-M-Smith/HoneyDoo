@@ -6,14 +6,11 @@ import tools.checkSave as checkSave
 import tools.HoneyDooSQL as HoneyDooSQL
 from kivy.app import App
 
-
 app = App.get_running_app()
-
 
 class Refresh(Screen):
     pass
 
-#Main Display, Task Bar and tasks ----Moved to separate Module
 class MainWindow(Screen):
 
     def on_pre_enter(self):
@@ -31,14 +28,15 @@ class MainWindow(Screen):
             c.reset()
         except:
             config.mydb = HoneyDooSQL.dbSetup()
+
         self.plus = checkSave.plus()
         config.task = HoneyDooSQL.readTasks(config.mydb)
-
         i = 0
+
         while i < 10:
             self.ids[list(self.ids)[i]].text = str(config.task[i]['TASK_NAME']).upper()
             i+=1
-
+    
         id = 'task1'
         MainWindow.update_display(self, id)
 
@@ -79,16 +77,13 @@ class TaskPopUp(Popup):
             dataError = DataError()
             errorPopUp(result)
 
-#Full Task List
 class TaskList(Screen):
     pass
 
-#Registration Form for New User
 class RegisterRequest(FloatLayout):
     pass
 
 def RegisterPopUp():
-
     show = RegisterRequest()
     window = Popup(
         title = "New User",
@@ -105,10 +100,33 @@ class Register(Screen):
 
     def on_enter(self):
         RegisterPopUp()
+
+    def submitUser(self, email, name, psswd, psswd2):
+        if (
+            email == ''
+            or
+            name == ''
+            or 
+            psswd == ''
+            or
+            psswd2 == ''):
+            result = 'Please fill out all fields'
+        else:
+            if psswd == psswd2:
+                result = HoneyDooSQL.registerUser(config.mydb, name, email, psswd)
+            else:
+                result = 'Passwords Do Not Match' 
+
+        if result == '':
+            pass
+            return 'main'
+        else:
+            global dataError
+            dataError = DataError()
+            errorPopUp(result)
+            return 'register' 
     pass
 
-
-#New Task Screen
 class NewTask(Screen):
 
     def submitTask(self, user, task_name, description, priority):
@@ -144,13 +162,14 @@ class NewTask(Screen):
             return 'addTask'
     pass
         
-class DataError(FloatLayout): #Data entry Error Popup
+class DataError(FloatLayout):
     pass
 
 def errorPopUp(result):
-    
+
     dataError.ids.error.text = str(result)
     show = dataError
+
     window = Popup(
         title = "Entry Error",
         title_color = (.4, 1, .7, 1),
