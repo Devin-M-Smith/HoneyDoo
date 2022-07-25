@@ -12,7 +12,7 @@ def dbSetup():
     try:
         mydb = mysql.connector.connect(
         host = "devin-m-smith.com",
-        port = 3306, #change to devin-m-smith.com for production
+        port = 3306,
         user = "HoneyDoo",
         passwd = "honeydoo",
         database = 'honeydoo',
@@ -46,7 +46,7 @@ def readTasks(mydb):
         SELECT * FROM TASKS
         WHERE STATUS = 1
         ORDER BY DATE_CREATED ASC, PRIORITY DESC
-    """)
+    """) # 1 is open, 0 is closed
 
     records = c.fetchall()
     task = []
@@ -92,7 +92,7 @@ def completeTask(mydb, taskID):
             UPDATE TASKS
             SET STATUS = 0
             WHERE TASK_ID = %s;
-        """, (taskID,))
+        """, (taskID,)) # close tasks by setting STATUS = 0
         mydb.commit()
         return ''
     except Error as E:
