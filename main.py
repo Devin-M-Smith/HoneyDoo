@@ -16,12 +16,9 @@ def remove_splash_custom():
         loadingscreen.hide_loading_screen()
     return
 
-#Phone Layout
 from kivy.core.window import Window
 Window.clearcolor = (.4, 1, .7, 1)
-
-#Window Definitions
-#App Logo/Start Screen
+Window.softinput_mode = 'below_target'
 
 class LoadWindow(Screen):
     def load(self):
@@ -56,12 +53,9 @@ class LoadWindow(Screen):
     def on_enter(self):
         Clock.schedule_once(lambda dt: self.load(), 4)
 
-
-#Baseclass window
 class WindowManager(ScreenManager):
     pass
 
-#Assign return value for App.Build()
 wm = WindowManager(transition=FadeTransition())
 wm.switch_to(LoadWindow())
 
