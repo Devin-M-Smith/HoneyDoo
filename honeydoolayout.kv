@@ -307,9 +307,9 @@
         Input:
             id: Email
         RegisterContent:
-            text: 'USERNAME'
+            text: 'FIRST NAME'
         Input:
-            id: Username
+            id: Name
         RegisterContent:
             text: 'PASSWORD'
         Input:
@@ -323,7 +323,7 @@
         MenuItem:
             text: "SUBMIT"
             on_release:
-                app.root.current = "main"
+                app.root.current = root.submitUser(Email.text, Name.text, Password.text, Password2.text)
                 root.manager.transition.direction = "up"
 
         

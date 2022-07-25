@@ -2,6 +2,7 @@ import datetime
 import mysql.connector
 from mysql.connector import Error
 from configparser import  ConfigParser
+from tools.passwordHandler import encryptPassword
 
 config = ConfigParser()
 
@@ -14,7 +15,7 @@ def dbSetup():
         host = "devin-m-smith.com",
         port = 3306,
         user = "HoneyDoo",
-        passwd = "honeydoo",
+        passwd = "honeydoo", #Not real password
         database = 'honeydoo',
         connect_timeout = 8
     )
@@ -93,6 +94,23 @@ def completeTask(mydb, taskID):
             SET STATUS = 0
             WHERE TASK_ID = %s;
         """, (taskID,)) # close tasks by setting STATUS = 0
+        mydb.commit()
+        return ''
+    except Error as E:
+        return E
+    except:
+        return 'Unknown Error'
+
+def registerUser(mydb, name, email, psswd):
+    c = mydb.cursor(dictionary=True)
+
+    try:
+        c.execute("""
+            INSERT INTO USERS
+            (NAME, EMAIL, PASSWORD, ACTIVE)
+            VALUES
+            (%s, %s, %s, 1);
+        """, (name.upper(), email.upper(), encryptPassword(psswd)))
         mydb.commit()
         return ''
     except Error as E:
