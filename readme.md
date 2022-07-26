@@ -60,6 +60,7 @@
 * Database Connectivity
 * Ability to Create new Tasks
 * Ability to Complete Tasks
+* Register User
 
 ### VIEWS:
 ### Main Task Screen 
@@ -72,7 +73,9 @@
 * No User Selection yet 
 
 ### Registration Screen 
-NO FUNCTIONALITY
+* User required to register
+* Encrypted Password
+* No Sign In functionality yet
 
 ### Full Task List Screen 
 NO FUNCTIONALITY
