@@ -15,7 +15,7 @@
 
 ### v0.0.1.6 BETA
 
-* Registration now submits real information to DataBase
+* Registration now submits real information to database
 * Encrypted password sent to database
 * Fixed an issue where Keyboard would hide the text input
 
