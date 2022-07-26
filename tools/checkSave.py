@@ -8,8 +8,6 @@ def startWindow():
         window = "main"
     else:
         window = "register"
-        with open('config.ini', 'w') as configfile:
-            con.write(configfile)
     return window
 
 def plus():
