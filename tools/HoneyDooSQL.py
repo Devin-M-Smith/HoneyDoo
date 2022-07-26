@@ -17,7 +17,7 @@ def dbSetup():
         user = "HoneyDoo",
         passwd = "honeydoo", #Not real password
         database = 'honeydoo',
-        connect_timeout = 8
+        connect_timeout = 15
     )
     except Error:
         mydb = mysql.connector.connect(
@@ -73,10 +73,10 @@ def writeTask(mydb, user, taskName, taskDetail, taskPriority):
     try:
         c.execute("""
             INSERT INTO TASKS
-            (TASK_NAME, DESCRIPTION, PRIORITY, STATUS, DATE_CREATED)
+            (UID, TASK_NAME, DESCRIPTION, PRIORITY, STATUS, DATE_CREATED)
             VALUES
-            (%s, %s, %s, %s, %s)
-        """, (taskName.upper(), taskDetail.upper(), taskPriority, 1, datetime.date.today()))
+            (%s, %s, %s, %s, %s, %s)
+        """, (user, taskName.upper(), taskDetail.upper(), taskPriority, 1, datetime.date.today()))
         mydb.commit()
         return ''
     except Error as E:
@@ -112,7 +112,12 @@ def registerUser(mydb, name, email, psswd):
             (%s, %s, %s, 1);
         """, (name.upper(), email.upper(), encryptPassword(psswd)))
         mydb.commit()
-        return ''
+        c.execute("""
+            SELECT UID FROM USERS
+            WHERE EMAIL = %s;
+        """, (email.upper(), ))
+        result = c.fetchall()
+        return str(result[0]['UID'])
     except Error as E:
         return E
     except:

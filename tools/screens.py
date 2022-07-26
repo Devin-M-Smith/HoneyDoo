@@ -5,6 +5,9 @@ from kivy.uix.floatlayout import FloatLayout
 import tools.checkSave as checkSave
 import tools.HoneyDooSQL as HoneyDooSQL
 from kivy.app import App
+from configparser import ConfigParser
+
+con = ConfigParser()
 
 app = App.get_running_app()
 
@@ -117,8 +120,14 @@ class Register(Screen):
             else:
                 result = 'Passwords Do Not Match' 
 
-        if result == '':
-            pass
+        if (result.isdigit()):
+            con['USER'] = {}
+            con['USER']['uid'] = result
+            con['USER']['email'] = email.upper()
+            con['USER']['name'] = name.upper()
+            con['USER']['psswd'] = psswd
+            with open('config.ini','w') as configfile:
+                con.write(configfile)
             return 'main'
         else:
             global dataError
@@ -128,6 +137,13 @@ class Register(Screen):
     pass
 
 class NewTask(Screen):
+    
+    def on_enter(self):
+        con.read('config.ini')
+        usernames = []
+        for f in con.sections():
+            usernames.append(con[f]['name'])
+        self.ids.assigned.values = usernames
 
     def submitTask(self, user, task_name, description, priority):
 
@@ -141,8 +157,14 @@ class NewTask(Screen):
             priority = self.ids.priority.values.index(priority)
         except:
             priority = -1
+        try:
+            user = self.ids.assigned.values.index(user)
+        except:
+            user = -1
 
         if (
+            user == -1
+            or
             task_name == ''
             or
             description == ''
@@ -150,7 +172,10 @@ class NewTask(Screen):
             priority == -1):
             result = 'Please fill out all fields'
         else:
-            result = HoneyDooSQL.writeTask(config.mydb, user, task_name, description, priority)
+            if user == 0:
+                result = HoneyDooSQL.writeTask(config.mydb, int(con['USER']['uid']), task_name, description, priority)
+            else:
+                result = HoneyDooSQL.writeTask(config.mydb, int(con['PARTNER']['uid']), task_name, description, priority)
 
         if result == '':
             pass
