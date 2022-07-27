@@ -1,3 +1,10 @@
 mydb = None
 task = None
 displayTask = 0
+name = ''
+email = ''
+uid = ''
+psswd = ''
+code = 0
+result = ''
+regex = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b'
