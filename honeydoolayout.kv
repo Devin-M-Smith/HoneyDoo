@@ -322,8 +322,7 @@
         MenuItem:
             text: "SUBMIT"
             on_release:
-                app.root.current = root.submitUser(Email.text, Name.text, Password.text, Password2.text)
-                root.manager.transition.direction = "up"
+                root.submitUser(Email.text, Name.text, Password.text, Password2.text)
 
 <RegisterRequest>
     Label:
@@ -358,3 +357,25 @@
             color: 0, 1, .52, .9
             on_release:
                 root.dismiss()
+
+<EmailConfirm@Popup + BackgroundColor>
+    auto_dismiss: False
+    GridLayout:
+        rows: 2
+        cols: 1
+        Label:
+            color: .8, 1, .9, 1
+            text: "Please Check Email For Confirmation Code"
+            pos_hint: {"x": 0, "top": 0.3}
+        GridLayout:
+            cols: 2
+            size_hint_y: .8
+            Input:
+                id: code
+                size_hint_x: 2
+            MenuItem:
+                text: 'CONFIRM'
+                on_release:
+                    root.dismiss()
+                    app.root.current = root.confirm(code.text)
+                    app.root.transition.direction = "up"

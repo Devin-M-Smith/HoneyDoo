@@ -1,3 +1,5 @@
+from email.message import EmailMessage
+from random import randint
 from kivy.uix.screenmanager import Screen
 import tools.config as config
 from kivy.uix.popup import Popup
@@ -6,6 +8,8 @@ import tools.checkSave as checkSave
 import tools.HoneyDooSQL as HoneyDooSQL
 from kivy.app import App
 from configparser import ConfigParser
+import re
+import smtplib
 
 con = ConfigParser()
 
@@ -91,12 +95,74 @@ def RegisterPopUp():
     window = Popup(
         title = "New User",
         title_color = (.4, 1, .7, 1),
-        title_size = '28sp', 
+        title_size = '28sp',
         separator_color = (0, .4, .2, 1),
-        content = show, 
+        content = show,
         background_color = (0, .4, .2, .5),
         size_hint = (None, None), 
         size = ('300sp', '150sp'))
+    window.open()
+
+
+def sendConfirmEmail():
+    config.code = randint(111111, 999999)
+    sender = 'HoneyDooApp@gmail.com'
+    receiver = config.email
+
+    body = "Your confirmation code is: " + str(config.code) + "\nThank You,\nHoneyDoo"
+
+    msg = EmailMessage()
+    msg['Subject'] = 'HoneyDoo Confirmation Code'
+    msg['From'] = sender
+    msg['To'] = receiver
+    msg.set_content(body)
+
+    try:
+        with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtpObj:
+            smtpObj.login(sender, 'NOTREALPASS')
+            smtpObj.send_message(msg)
+            EmailPopUp()
+    except:
+        global dataError
+        dataError = DataError()
+        errorPopUp('Failed to Send Confirmation Email\nTry again later')
+    
+
+
+class EmailConfirm(Popup):
+    def confirm(self, code):
+        if len(code) > 2:
+            if int(code) == config.code:
+                config.result = HoneyDooSQL.registerUser(config.mydb, config.name, config.email, config.psswd)
+            else:
+                config.result = 'Code Does Not Match\nTry Again'
+        else:
+            config.result = 'Code Does Not Match\nTry Again'
+
+        if (config.result.isdigit()):
+            con['USER'] = {}
+            con['USER']['uid'] = config.result
+            con['USER']['email'] = config.email.upper()
+            con['USER']['name'] = config.name.upper()
+            con['USER']['psswd'] = config.psswd
+            with open('config.ini','w') as configfile:
+                con.write(configfile)
+            return 'main'
+        else:
+            global dataError
+            dataError = DataError()
+            errorPopUp(config.result)
+            return 'register'
+
+def EmailPopUp():
+    window = EmailConfirm(
+        title = "Confirmation",
+        title_color = (.4, 1, .7, 1),
+        title_size = '28sp', 
+        separator_color = (0, .4, .2, 1),
+        background_color = (0, .4, .2, .5),
+        size_hint = (None, None), 
+        size = ('350sp', '150sp'))
     window.open()
 
 class Register(Screen):
@@ -113,27 +179,28 @@ class Register(Screen):
             psswd == ''
             or
             psswd2 == ''):
-            result = 'Please fill out all fields'
-        else:
-            if psswd == psswd2:
-                result = HoneyDooSQL.registerUser(config.mydb, name, email, psswd)
-            else:
-                result = 'Passwords Do Not Match' 
-
-        if (result.isdigit()):
-            con['USER'] = {}
-            con['USER']['uid'] = result
-            con['USER']['email'] = email.upper()
-            con['USER']['name'] = name.upper()
-            con['USER']['psswd'] = psswd
-            with open('config.ini','w') as configfile:
-                con.write(configfile)
-            return 'main'
-        else:
+            config.result = 'Please fill out all fields'
             global dataError
             dataError = DataError()
-            errorPopUp(result)
-            return 'register' 
+            errorPopUp(config.result) 
+        else:
+            if (re.fullmatch(config.regex, email)):
+                if psswd == psswd2:
+                    config.name = name
+                    config.email = email
+                    config.psswd = psswd
+                    sendConfirmEmail()
+                else:
+                    config.result = 'Passwords Do Not Match'
+                    dataError = DataError()
+                    errorPopUp(config.result) 
+            else:
+                config.result = 'Invalid Email'
+                dataError = DataError()
+                errorPopUp(config.result) 
+            
+
+        
     pass
 
 class NewTask(Screen):

@@ -7,15 +7,12 @@ from tools.passwordHandler import encryptPassword
 config = ConfigParser()
 
 def dbSetup():
-    #if config.read('config.ini'):
-    #    pass
-    #else:
     try:
         mydb = mysql.connector.connect(
         host = "devin-m-smith.com",
         port = 3306,
         user = "HoneyDoo",
-        passwd = "honeydoo", #Not real password
+        passwd = "NOTREALPASS",
         database = 'honeydoo',
         connect_timeout = 15
     )
@@ -24,7 +21,7 @@ def dbSetup():
         host = "10.0.0.147",
         port = 3306,
         user = "HoneyDoo",
-        passwd = "honeydoo",
+        passwd = "NOTREALPASS",
         database = 'honeydoo',
         connect_timeout = 3
     )
@@ -32,7 +29,7 @@ def dbSetup():
         mydb = mysql.connector.connect(
         host = "localhost",
         user = "HoneyDoo",
-        passwd = "honeydoo",
+        passwd = "NOTREALPASS",
         database = 'honeydoo',
         connect_timeout = 3
     )
@@ -114,8 +111,9 @@ def registerUser(mydb, name, email, psswd):
         mydb.commit()
         c.execute("""
             SELECT UID FROM USERS
-            WHERE EMAIL = %s;
-        """, (email.upper(), ))
+            WHERE EMAIL = %s
+            AND NAME = %s;
+        """, (email.upper(), name.upper()))
         result = c.fetchall()
         return str(result[0]['UID'])
     except Error as E:
