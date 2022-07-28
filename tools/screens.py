@@ -128,7 +128,6 @@ def sendConfirmEmail():
         errorPopUp('Failed to Send Confirmation Email\nTry again later')
     
 
-
 class EmailConfirm(Popup):
     def confirm(self, code):
         if len(code) > 2:
@@ -144,7 +143,6 @@ class EmailConfirm(Popup):
             con['USER']['uid'] = config.result
             con['USER']['email'] = config.email.upper()
             con['USER']['name'] = config.name.upper()
-            con['USER']['psswd'] = config.psswd
             with open('config.ini','w') as configfile:
                 con.write(configfile)
             return 'main'
@@ -164,6 +162,33 @@ def EmailPopUp():
         size_hint = (None, None), 
         size = ('350sp', '150sp'))
     window.open()
+
+
+class NoSave(Screen):
+    pass
+
+class SignIn(Screen):
+
+    def signIn(self, email, psswd):
+        try:
+            config.result = HoneyDooSQL.signIn(config.mydb, email, psswd)
+        except:
+            config.result = 'User Not Found'
+
+        if (config.result.isdigit()):
+            con['USER'] = {}
+            con['USER']['uid'] = config.result
+            con['USER']['email'] = config.email.upper()
+            con['USER']['name'] = config.name.upper()
+            with open('config.ini','w') as configfile:
+                con.write(configfile)
+            return 'main'
+        else:
+            global dataError
+            dataError = DataError()
+            errorPopUp(config.result)
+            return 'sign'
+    pass
 
 class Register(Screen):
 
