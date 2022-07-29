@@ -87,22 +87,6 @@ class TaskPopUp(Popup):
 class TaskList(Screen):
     pass
 
-class RegisterRequest(FloatLayout):
-    pass
-
-def RegisterPopUp():
-    show = RegisterRequest()
-    window = Popup(
-        title = "New User",
-        title_color = (.4, 1, .7, 1),
-        title_size = '28sp',
-        separator_color = (0, .4, .2, 1),
-        content = show,
-        background_color = (0, .4, .2, .5),
-        size_hint = (None, None), 
-        size = ('300sp', '150sp'))
-    window.open()
-
 
 def sendConfirmEmail():
     config.code = randint(111111, 999999)
@@ -191,9 +175,6 @@ class SignIn(Screen):
     pass
 
 class Register(Screen):
-
-    def on_enter(self):
-        RegisterPopUp()
 
     def submitUser(self, email, name, psswd, psswd2):
         if (
