@@ -1,10 +1,8 @@
 import datetime
 import mysql.connector
 from mysql.connector import Error
-from configparser import  ConfigParser
 from tools.passwordHandler import encryptPassword
-
-config = ConfigParser()
+import tools.config as config
 
 def dbSetup():
     try:
@@ -34,7 +32,28 @@ def dbSetup():
         connect_timeout = 3
     )
     return mydb
-    
+
+
+def signIn(mydb, email, psswd):
+    mydb.commit()
+    print(email.upper())
+    psswd2 = encryptPassword(psswd)
+    print(psswd2)
+    c = mydb.cursor(dictionary=True)
+    c.execute("""
+        SELECT * FROM USERS
+        WHERE EMAIL = %s
+        AND PASSWORD = %s;
+    """, (email.upper(), psswd2))
+    userMatch = c.fetchall()
+    user = []
+    user.append(userMatch[0])
+    config.email = str(user[0]['EMAIL'])
+    config.name = str(user[0]['NAME'])
+    c.reset()
+    return str(user[0]['UID'])
+
+
 def readTasks(mydb):
 
     mydb.commit()

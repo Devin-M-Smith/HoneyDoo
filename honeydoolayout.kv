@@ -25,6 +25,9 @@
     option_cls: Factory.get("SpinnerDrops")
     color: .8, 1, .9, 1
 
+<NoSaveContent@GridLayout+BackgroundColor>
+    background_color: 0, .4, .2, 1
+
 <LoadContent@GridLayout+BackgroundColor>
     background_color: 0, .4, .2, 1
 
@@ -113,7 +116,45 @@
     font_size: '22sp'
     background_color: .8, 1, .9, 1
 
-
+<NoSave>
+    name: 'nosave'
+    BoxLayout:
+        orientation: 'vertical'
+        NoSaveContent:
+            cols: 1
+            rows: 3
+            LoadTitle:
+                text: 'HoneyDoo'
+            NoSaveContent:
+                cols: 3
+                rows: 1
+                size_hint_y: .2
+                NoSaveContent:
+                    size_hint_x: .3
+                NoSaveContent:
+                    halign: 'center'
+                    cols: 2
+                    rows: 1
+                    size_hint_y: .2
+                    SubmitButton:
+                        background_normal: ''
+                        color: 0, .4, .2, 1
+                        text: 'Sign In'
+                        on_release:
+                            app.root.current = 'sign'
+                            app.root.transition.direction = "right"
+                    SubmitButton:
+                        text: 'Register'
+                        color: 0, 1, .52, .9
+                        background_color: .4, 1, .7, 1
+                        on_release:
+                            app.root.current = 'register'
+                            app.root.transition.direction = "left"
+                NoSaveContent:
+                    size_hint_x: .3
+            LoadByline:
+                text: 'Shanor-Smith'
+                size_hint_y: .2
 
 <LoadWindow>
     name: 'load'
@@ -290,11 +331,48 @@
                 app.root.current = 'main'
                 root.manager.transition.direction = "up"
 
+<SignIn>
+    name: 'sign'
+    MainDisplay:
+        cols: 1
+        rows: 10
+        padding: '5sp'
+        Header:
+            color: 0, 0, 0, 1
+            text: "SIGN IN"
+            font_size: '40sp'
+            halign: "center"
+            bold: True
+        RegisterContent:
+        RegisterContent:
+            text: 'EMAIL'
+        Input:
+            id: Email
+            hint_text: 'john@doe.com'
+        RegisterContent:
+            text: 'PASSWORD'
+        Input:
+            id: Password
+            password: True
+            hint_text: 'is!heReally/john_doe?'
+        RegisterContent:
+        MenuItem:
+            text: "SIGN IN"
+            on_release:
+                app.root.current = root.signIn(Email.text, Password.text)
+                root.manager.transition.direction = "up"
+        BackButton:
+            text: 'GO BACK'
+            on_release:
+                app.root.current = 'nosave'
+                root.manager.transition.direction = "left"
+                
 <Register>
     name: 'register'
     MainDisplay:
         cols: 1
-        rows: 10
+        rows: 11
+        padding: '5sp'
         Header:
             color: 0, 0, 0, 1
             text: "REGISTER\nNEW ACCOUNT"
@@ -319,6 +397,8 @@
         Input:
             id: Password2
             password: True
+        RegisterContent:
+            size_hint_y: 0.1
         MenuItem:
             text: "SUBMIT"
             on_release:

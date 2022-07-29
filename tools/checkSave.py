@@ -7,19 +7,12 @@ def startWindow():
     if con.read('config.ini'):
         window = "main"
     else:
-        window = "register"
+        window = "nosave"
     return window
 
 def plus():
     if con.read('config.ini'):
         window = "addTask"
     else:
-        window = "register"
+        window = "nosave"
     return window
-
-def check():
-    if con.read('config.ini'):
-        checkResult = True
-    else:
-        checkResult = False
-    return checkResult
