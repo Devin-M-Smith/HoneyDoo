@@ -24,8 +24,8 @@ class LoadWindow(Screen):
     def load(self):
 
         def windowAfterLoad():
-            config.mydb = dbLoad()
-            if config.mydb == None:
+            load = dbLoad()
+            if load == None:
                 Clock.schedule_once(lambda dt: remove_splash_custom())
                 self.ids.connect_status.text = 'Unable to Connect'
                 Clock.schedule_once(lambda dt: app.stop(), 7)
