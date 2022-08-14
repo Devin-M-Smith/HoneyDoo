@@ -1,60 +1,47 @@
 from email.message import EmailMessage
 from random import randint
+import kivy
 from kivy.uix.screenmanager import Screen
 import tools.config as config
 from kivy.uix.popup import Popup
+from kivy.uix.gridlayout import GridLayout
+from kivy.uix.label import Label
 from kivy.uix.floatlayout import FloatLayout
 import tools.checkSave as checkSave
 import tools.HoneyDooSQL as HoneyDooSQL
-from kivy.app import App
+from kivy.animation import Animation
 from configparser import ConfigParser
 import re
 import smtplib
 
 con = ConfigParser()
 
-app = App.get_running_app()
+def checkPriority(priorityNumber):
+    priorityLabel = ['LOW', 'NORMAL', 'HIGH', 'MAJOR']
+    return priorityLabel[priorityNumber]
+
+def checkStatus(statusNumber):
+    statusLabel = ['CLOSED', 'OPEN']
+    return statusLabel[statusNumber]
+    
+def setPriorityColor(priorityNumber):
+    priorityColor = ['#00ff84', '#ffffff', 'bfff00', '#ff9933']
+    return priorityColor[priorityNumber]
+
+def setStatusColor(statusNumber):
+    statusColor = ['#9cc9b3', '#00ff84']
+    return statusColor[statusNumber]
+
 
 class Refresh(Screen):
     pass
 
+
 class MainWindow(Screen):
-
     def on_pre_enter(self):
-        self.ids.task_header.text = 'LOADING...'
-        self.ids.task_description.text = ''
-        self.ids.priority.text = ''
+        self.ids.tasks.clear_widgets()
 
-    def checkPriority(self, priorityNumber):
-        priorityLabel = ['LOW', 'NORMAL', 'HIGH', 'MAJOR']
-        return priorityLabel[priorityNumber]
-
-    def update(self):
-        try:
-            c = config.mydb.cursor(buffered=True)
-            c.reset()
-        except:
-            config.mydb = HoneyDooSQL.dbSetup()
-
-        self.plus = checkSave.plus()
-        config.task = HoneyDooSQL.readTasks(config.mydb)
-        i = 0
-
-        while i < 10:
-            self.ids[list(self.ids)[i]].text = str(config.task[i]['TASK_NAME']).upper()
-            i+=1
-    
-        id = 'task1'
-        MainWindow.update_display(self, id)
-
-    def update_display(self, id):
-        config.displayTask = list(self.ids).index(str(id))
-        self.ids.task_header.text = str(config.task[config.displayTask]['TASK_NAME'])
-        self.ids.task_description.text = str(config.task[config.displayTask]['DESCRIPTION'])
-        self.ids.priority.text = '[color=006633][size=10sp]' + str(config.task[config.displayTask]['DATE_CREATED']) + '[/size][/color]' + '\n[u]PRIORITY[/u]\n' + self.checkPriority(config.task[config.displayTask]['PRIORITY'])
-    
-    def completeTaskButton(self):
-
+    def completeTask(self):
         try:
             c = config.mydb.cursor(buffered=True)
             c.reset()
@@ -71,12 +58,48 @@ class MainWindow(Screen):
             size_hint = (None, None), 
             size = ('300sp', '150sp'))
         window.open()
+        pass
+
+    def on_enter(self):
+        try:
+            c = config.mydb.cursor(buffered=True)
+            c.reset()
+        except:
+            config.mydb = HoneyDooSQL.dbSetup()
+
+        config.task = HoneyDooSQL.readTasks(config.mydb)
+
+        i = 0
+        for task in config.task:
+            btn = TaskItem(size_hint_y=None, height='70sp')
+            priorityText = '[color=66ffb3][u]PRIORITY[/u][/color]\n' + '[b]'+checkPriority(task['PRIORITY'])+'[/b]'
+            statusText = '[color=66ffb3][u]STATUS[/u][/color]\n' + '[b]'+checkStatus(task['STATUS'])+'[/b]'
+            priorityColor = setPriorityColor(task['PRIORITY'])
+            statusColor = setStatusColor(task['STATUS'])
+            dateStatus = 'DATE CREATED: ' + str(task['DATE_CREATED'])
+
+            descriptionText = (
+                '[u]DESCRIPTION[/u]\n' + task['DESCRIPTION'] +
+                '\n\n' + 'ASSIGNED TO: ' + HoneyDooSQL.getUser(config.mydb, task['UID']) +
+                '\n' + dateStatus)
+
+            self.ids[str(task['TASK_ID'])] = btn 
+            btn.ids.task_id.text = str(task['TASK_ID'])
+            btn.ids.task_name.text = str(task['TASK_NAME'])
+            btn.ids.priority.color = priorityColor
+            btn.ids.priority.text = priorityText
+            btn.ids.status.color = statusColor
+            btn.ids.status.text = statusText
+            btn.ids.dropdown.text = descriptionText
+            btn.ids.dropdown.opacity = 0
+            self.ids.tasks.add_widget(btn)
+            i += 1
     pass
 
 class TaskPopUp(Popup):
 
     def updateCompleteTask(self):
-        result = HoneyDooSQL.completeTask(config.mydb, config.task[config.displayTask]['TASK_ID'])
+        result = HoneyDooSQL.completeTask(config.mydb, config.displayTask)
         if result == '':
             pass
         else:
@@ -84,7 +107,83 @@ class TaskPopUp(Popup):
             dataError = DataError()
             errorPopUp(result)
 
+
+class TaskItem(GridLayout):
+    def shrink(self, instance):
+        animation = Animation(height=(kivy.metrics.sp(70)), duration = .5)
+        animation.start(instance)
+
+    def grow(self, instance):
+        animation = Animation(height=(kivy.metrics.sp(200)), duration = .3)
+        config.displayTask = self.ids.task_id.text
+        animation.start(instance)
+        
+    def on_touch_down(self, touch):
+        if self.collide_point(*touch.pos):
+            if self.height < kivy.metrics.sp(71):
+                self.grow(self)
+                self.ids.dropdown.grow(self.ids.dropdown)
+            else:
+                self.ids.dropdown.shrink(self.ids.dropdown)
+                self.shrink(self)
+        else:
+            self.shrink(self)
+            self.ids.dropdown.shrink(self.ids.dropdown)
+    pass
+    
+class TaskDropdown(Label):
+    def grow(self, instance):
+        animation = Animation(size_hint_y=2, height=(kivy.metrics.sp(130)), duration = .3) + Animation(opacity = 1, duration = .2)
+        animation.start(instance)
+
+    def shrink(self, instance):
+        animation = Animation(opacity = 0, duration = .2) + Animation(size_hint_y=0, height=(kivy.metrics.sp(0)), duration = .3)
+        animation.start(instance)
+    pass
+
 class TaskList(Screen):
+
+    def on_leave(self):
+        self.ids.tasks.clear_widgets()
+
+    def on_enter(self):
+        try:
+            c = config.mydb.cursor(buffered=True)
+            c.reset()
+        except:
+            config.mydb = HoneyDooSQL.dbSetup()
+
+        config.task = HoneyDooSQL.readAllTasks(config.mydb)
+
+        i = 0
+        for task in config.task:
+            btn = TaskItem(size_hint_y=None, height='70sp')
+
+            priorityText = '[color=66ffb3][u]PRIORITY[/u][/color]\n' + '[b]'+checkPriority(task['PRIORITY'])+'[/b]'
+            statusText = '[color=66ffb3][u]STATUS[/u][/color]\n' + '[b]'+checkStatus(task['STATUS'])+'[/b]'
+            priorityColor = setPriorityColor(task['PRIORITY'])
+            statusColor = setStatusColor(task['STATUS'])
+
+            if task['STATUS'] == 1:
+                dateStatus = 'DATE CREATED: ' + str(task['DATE_CREATED'])
+            else:
+                dateStatus = 'DATE COMPLETED: ' + str(task['DATE_COMPLETED'])
+
+            descriptionText = (
+                '[u]DESCRIPTION[/u]\n' + task['DESCRIPTION'] +
+                '\n\n' + 'ASSIGNED TO: ' + HoneyDooSQL.getUser(config.mydb, task['UID']) +
+                '\n' + dateStatus)
+
+            self.ids[str(task['TASK_ID'])] = btn 
+            btn.ids.task_name.text = str(task['TASK_NAME'])
+            btn.ids.priority.color = priorityColor
+            btn.ids.priority.text = priorityText
+            btn.ids.status.color = statusColor
+            btn.ids.status.text = statusText
+            btn.ids.dropdown.text = descriptionText
+            btn.ids.dropdown.opacity = 0
+            self.ids.tasks.add_widget(btn)
+            i += 1
     pass
 
 

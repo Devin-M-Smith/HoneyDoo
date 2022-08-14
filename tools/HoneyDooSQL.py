@@ -12,7 +12,8 @@ def dbSetup():
         user = "HoneyDoo",
         passwd = "NOTREALPASS",
         database = 'honeydoo',
-        connect_timeout = 15
+        connect_timeout = 15,
+        auth_plugin='mysql_native_password'
     )
     except Error:
         mydb = mysql.connector.connect(
@@ -21,7 +22,8 @@ def dbSetup():
         user = "HoneyDoo",
         passwd = "NOTREALPASS",
         database = 'honeydoo',
-        connect_timeout = 3
+        connect_timeout = 3,
+        auth_plugin='mysql_native_password'
     )
     except:
         mydb = mysql.connector.connect(
@@ -29,16 +31,15 @@ def dbSetup():
         user = "HoneyDoo",
         passwd = "NOTREALPASS",
         database = 'honeydoo',
-        connect_timeout = 3
+        connect_timeout = 3,
+        auth_plugin='mysql_native_password'
     )
     return mydb
 
 
 def signIn(mydb, email, psswd):
     mydb.commit()
-    print(email.upper())
     psswd2 = encryptPassword(psswd)
-    print(psswd2)
     c = mydb.cursor(dictionary=True)
     c.execute("""
         SELECT * FROM USERS
@@ -50,11 +51,63 @@ def signIn(mydb, email, psswd):
     user.append(userMatch[0])
     config.email = str(user[0]['EMAIL'])
     config.name = str(user[0]['NAME'])
+    config.uid = str(user[0]['UID'])
     c.reset()
     return str(user[0]['UID'])
 
 
+def getUser(mydb, UID):
+    mydb.commit()
+    c = mydb.cursor(dictionary=True)
+
+    c.execute("""
+        SELECT NAME FROM USERS
+        WHERE UID = %s;
+    """, (UID, ))
+    user = c.fetchall()
+    return user[0]['NAME']
+
+def readAllTasks(mydb):
+
+    mydb.commit()
+    c = mydb.cursor(dictionary=True)
+
+    c.execute("""
+        SELECT * FROM TASKS
+        WHERE UID = %s
+        OR UID = %s
+        ORDER BY DATE_CREATED DESC, PRIORITY DESC;
+    """, (config.uid, config.uid)) # 1 is open, 0 is closed
+
+    records = c.fetchall()
+    task = []
+
+    i = 0
+    for record in records:
+        task.append(records[i])
+        i += 1
+
+    return task
+
 def readTasks(mydb):
+    mydb.commit()
+    c = mydb.cursor(dictionary=True)
+
+    c.execute("""
+        SELECT * FROM TASKS
+        WHERE STATUS = 1
+        AND UID = %s
+        ORDER BY DATE_CREATED ASC, PRIORITY DESC
+    """, (config.uid, )) # 1 is open, 0 is closed
+
+    records = c.fetchall()
+    task = []
+
+    for record in records:
+        task.append(record)
+    return task
+
+def readTasksOld(mydb):
 
     mydb.commit()
     c = mydb.cursor(dictionary=True)
@@ -62,8 +115,9 @@ def readTasks(mydb):
     c.execute("""
         SELECT * FROM TASKS
         WHERE STATUS = 1
+        AND UID = %s
         ORDER BY DATE_CREATED ASC, PRIORITY DESC
-    """) # 1 is open, 0 is closed
+    """, (config.uid, )) # 1 is open, 0 is closed
 
     records = c.fetchall()
     task = []
@@ -78,7 +132,7 @@ def readTasks(mydb):
         taskCount += 1
 
     while taskCount < 10:
-        task.append({'TASK_ID': 0, 'TASK_NAME' : 'NO TASK', 'DESCRIPTION': 'NO TASK', 'PRIORITY': 0, 'DATE_CREATED': datetime.date.today()})
+        task.append({'UID': config.uid, 'NAME': '', 'TASK_ID': 0, 'TASK_NAME' : 'NO TASK', 'DESCRIPTION': 'NO TASK', 'STATUS': 0, 'PRIORITY': 0, 'DATE_CREATED': datetime.date.today()})
         taskCount += 1
     return task
 
@@ -107,9 +161,10 @@ def completeTask(mydb, taskID):
     try:
         c.execute("""
             UPDATE TASKS
-            SET STATUS = 0
+            SET STATUS = 0,
+            DATE_COMPLETED = %s
             WHERE TASK_ID = %s;
-        """, (taskID,)) # close tasks by setting STATUS = 0
+        """, (datetime.date.today(), taskID)) # close tasks by setting STATUS = 0
         mydb.commit()
         return ''
     except Error as E:

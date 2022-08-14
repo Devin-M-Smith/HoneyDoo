@@ -42,7 +42,6 @@
 <RefreshLabel@Label+BackgroundColor>
     background_color: 0, .4, .2, 1
     color: .4, 1, .7, 1
-    font_size: '64sp'
 
 <MainDisplay@GridLayout+BackgroundColor>
     background_color: .4, 1, .7, 1
@@ -57,6 +56,43 @@
     valign: 'middle'
 	color: .8, 1, .9, 1
 	background_color: 0, 1, .52, 1
+
+<TaskItem@GridLayout+BackgroundColor>
+    color: .8, 1, .9, 1
+    background_color: 0, 1, .52, 1
+    cols: 1
+    rows: 2
+    GridLayout:
+        cols: 3
+        rows: 1
+        RefreshLabel:
+            halign: 'center'
+            markup: True
+            id: status
+        GridLayout:
+            size_hint_x: 2
+            cols: 1
+            RefreshLabel:
+                bold: True
+                id: task_name
+            RefreshLabel:
+                id: task_id
+                size_hint_y: 0
+                opacity: 0
+        RefreshLabel:
+            halign: 'center'
+            markup: True
+            id: priority
+    TaskDropdown:
+        id: dropdown
+        markup: True
+        halign: 'center'
+        valign: 'top'
+
+<TaskDropdown@Label+BackgroundColor>
+    size_hint_y: 0
+    height: 0
+    color: 0, 0, 0, 1
 
 <SubmitButton@Button+BackgroundColor>
     text_size: self.size
@@ -183,106 +219,65 @@
 
 <MainWindow>
     name: 'main'
-    on_enter: root.update()
     BoxLayout:
-        orientation: 'horizontal'
-        ScrollView:
-            size_hint_x: .3
-            bar_width: 0
-            effect_cls: 'OpacityScrollEffect'
-            Menu:
-                size_hint_y: root.height/(root.height/(12/6))
-                cols: 1
-                MenuItem:
-                    font_size: '80sp'
-                    text: '+'
-                    on_release:
-                        app.root.current = root.plus
-                        root.manager.transition.direction = "down"
-                MenuItem:
-                    id: task1
-                    on_release:
-                        root.update_display('task1')
-                MenuItem:
-                    id: task2
-                    on_release:
-                        root.update_display('task2')
-                MenuItem:
-                    id: task3
-                    on_release:
-                        root.update_display('task3')
-                MenuItem:
-                    id: task4
-                    on_release:
-                        root.update_display('task4')
-                MenuItem:
-                    id: task5
-                    on_release:
-                        root.update_display('task5')
-                MenuItem:
-                    id: task6
-                    on_release:
-                        root.update_display('task6')
-                MenuItem:
-                    id: task7
-                    on_release:
-                        root.update_display('task7')
-                MenuItem:
-                    id: task8
-                    on_release:
-                        root.update_display('task8')
-                MenuItem:
-                    id: task9
-                    on_release:
-                        root.update_display('task9')
-                MenuItem:
-                    id: task10
-                    on_release:
-                        root.update_display('task10')
-                MenuItem:
-                    text: 'FULL TASK\nLIST'
-                    on_release:
-                        app.root.current = "second"
-                        root.manager.transition.direction = "left"
-
-        MainDisplay:
-            cols: 1
-            rows: 3
-            size: self.size
-            HeaderGrid:
-                size_hint_y: 1.1
-                Header:
-                    text_size: self.width, None
-                    halign: 'center'
-                    font_size: '24sp'
-                    id: task_header
-                Priority:
-                    halign: 'center'
-                    size_hint_x: .5
-                    markup: True
-                    id: priority
-            Content:
-                padding: 10, 10
-                text_size: self.size
-                valign: 'top'
-                id: task_description
-                size_hint: self.width, 5
-                color: 0, 0, 0, 1
-            SubmitButton:
-                size_hint: self.width, .5
+        orientation: 'vertical'
+        RegisterContent:
+            size_hint: None, None
+            height: '10sp'
+        GridLayout:
+            cols: 2
+            rows: 1
+            size_hint_y: .1
+            padding_x: '5sp'
+            MenuItem:
+                text: 'CREATE NEW TASK'
+                on_release:
+                    app.root.current = 'addTask'
+                    app.root.transition.direction = "down"
+            MenuItem:
                 text: 'COMPLETE TASK'
                 on_release:
-                    root.completeTaskButton()
+                    root.completeTask()
+        RegisterContent:
+            size_hint: None, None
+            height: '10sp'
+        ScrollView:
+            GridLayout:
+                size_hint_y: None
+                height: self.minimum_height
+                cols: 1
+                id: tasks
+                spacing: '1sp'
+        BackButton:
+            text: 'Full Task List'
+            size_hint_y: None
+            height: '60sp'
+            on_release:
+                app.root.current = 'tasklist'
+                root.manager.transition.direction = 'left'
 
 
 <TaskList>
-    name: 'second'
-    BackButton:
-        text: "GO BACK"
-        on_release:
-            app.root.current = "main"
-            root.manager.transition.direction = "right"
-
+    name: 'tasklist'
+    BoxLayout:
+        orientation: 'vertical'
+        RegisterContent:
+            text: 'Full Task List'
+            size_hint_y: .2
+        ScrollView:
+            GridLayout:
+                size_hint_y: None
+                height: self.minimum_height
+                cols: 1
+                id: tasks
+                spacing: '1sp'
+        BackButton:
+            text: 'Go Back'
+            size_hint_y: None
+            height: '60sp'
+            on_release:
+                app.root.current = 'main'
+                root.manager.transition.direction = 'right'
 
 <NewTask>
     name: 'addTask'
