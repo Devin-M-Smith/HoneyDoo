@@ -38,6 +38,7 @@ class Refresh(Screen):
 
 class MainWindow(Screen):
     def on_pre_enter(self):
+        self.ids.menu.text = 'v MENU v'
         self.ids.tasks.clear_widgets()
         try:
             c = config.mydb.cursor(buffered=True)
@@ -46,6 +47,19 @@ class MainWindow(Screen):
             config.mydb = HoneyDooSQL.dbSetup()
 
         config.task = HoneyDooSQL.readTasks(config.mydb)
+    
+
+    def menuSelect(self, item):
+        if item == 'COMPLETE TASK':
+            self.ids.menu.text = 'v MENU v'
+            self.completeTask()
+            return 'main'
+        elif item == 'SETTINGS':
+            print('settings selected')
+            self.ids.menu.text = 'v MENU v'
+            return 'main'
+        else:
+            return 'main'
 
     def completeTask(self):
         try:
@@ -67,7 +81,7 @@ class MainWindow(Screen):
         pass
 
     def on_enter(self):
-
+        
         i = 0
         for task in config.task:
             btn = TaskItem(size_hint_y=None, height='100sp')

@@ -13,6 +13,12 @@
     background_color: (0, .4, .2, 1) if self.state == 'down' else (0, .4, .2, 1)
     background_normal: ''
     background_down: ''
+    canvas.before:
+        Color:
+            rgba: .8, 1, .9, 1
+        Line:
+            width: 2
+            rectangle: self.x, self.y, self.width, self.height
     font_size: '30sp'
     color: .8, 1, .9, 1
 
@@ -225,19 +231,19 @@
             size_hint: None, None
             height: '10sp'
         GridLayout:
-            cols: 2
+            cols: 1
             rows: 1
             size_hint_y: .1
             padding_x: '5sp'
-            MenuItem:
-                text: 'CREATE NEW TASK'
-                on_release:
-                    app.root.current = 'addTask'
+            HoneyDooSpinner:
+                id: menu
+                text: 'v MENU v'
+                values: ['CREATE NEW TASK', 'COMPLETE TASK', 'SETTINGS']
+                on_text:
+                    app.root.current = 'addTask' if(self.text == 'CREATE NEW TASK') else root.menuSelect(self.text)
                     app.root.transition.direction = "down"
-            MenuItem:
-                text: 'COMPLETE TASK'
-                on_release:
-                    root.completeTask()
+                    
+
         RegisterContent:
             size_hint: None, None
             height: '10sp'
