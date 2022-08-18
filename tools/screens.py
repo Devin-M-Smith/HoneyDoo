@@ -81,7 +81,7 @@ class MainWindow(Screen):
         pass
 
     def on_enter(self):
-        
+
         i = 0
         for task in config.task:
             btn = TaskItem(size_hint_y=None, height='100sp')
@@ -153,6 +153,16 @@ class TaskDropdown(Label):
         animation = Animation(opacity = 0, duration = .2) + Animation(size_hint_y=0, height=(kivy.metrics.sp(0)), duration = .3)
         animation.start(instance)
     pass
+
+class PairSetting(GridLayout):
+    pass
+
+class SettingsWindow(Screen):
+    def on_pre_enter(self):
+        pair = PairSetting()
+        self.ids.settings.add_widget(pair)
+        
+
 
 class TaskList(Screen):
 
@@ -270,17 +280,27 @@ class SignIn(Screen):
             config.result = HoneyDooSQL.signIn(config.mydb, email, psswd)
         except:
             config.result = 'User Not Found'
-
+        global dataError
         if (config.result.isdigit()):
             con['USER'] = {}
             con['USER']['uid'] = config.result
             con['USER']['email'] = config.email.upper()
             con['USER']['name'] = config.name.upper()
+            if (config.paireduid.isdigit()):
+                try:
+                    config.pairedName = HoneyDooSQL.getUser(config.mydb, config.paireduid)
+                    con['PARTNER'] = {}
+                    con['PARTNER']['uid'] = config.paireduid
+                    con['PARTNER']['name'] = config.pairedName.upper()
+                except:
+                    config.result = 'Failed to get Paired User'
+                    dataError = DataError()
+                    errorPopUp(config.result)
+
             with open('config.ini','w') as configfile:
                 con.write(configfile)
             return 'main'
         else:
-            global dataError
             dataError = DataError()
             errorPopUp(config.result)
             return 'sign'

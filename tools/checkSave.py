@@ -10,6 +10,9 @@ def startWindow():
         window = "main"
         config.name = con['USER']['name']
         config.uid = con['USER']['uid']
+        if con.has_section('PARTNER'):
+            config.paireduid = con['PARTNER']['uid']
+            config.pairedName = con['PARTNER']['name']
     else:
         window = "nosave"
     return window

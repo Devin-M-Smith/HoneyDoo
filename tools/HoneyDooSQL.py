@@ -49,6 +49,8 @@ def signIn(mydb, email, psswd):
     userMatch = c.fetchall()
     user = []
     user.append(userMatch[0])
+    if(user[0]['PAIRED']):
+        config.paireduid = str(user[0]['PAIRED'])
     config.email = str(user[0]['EMAIL'])
     config.name = str(user[0]['NAME'])
     config.uid = str(user[0]['UID'])
@@ -77,7 +79,7 @@ def readAllTasks(mydb):
         WHERE UID = %s
         OR UID = %s
         ORDER BY DATE_CREATED DESC, PRIORITY DESC;
-    """, (config.uid, config.uid)) # 1 is open, 0 is closed
+    """, (config.uid, config.paireduid)) # 1 is open, 0 is closed
 
     records = c.fetchall()
     task = []
