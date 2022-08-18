@@ -7,7 +7,6 @@ from kivy.uix.popup import Popup
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.label import Label
 from kivy.uix.floatlayout import FloatLayout
-import tools.checkSave as checkSave
 import tools.HoneyDooSQL as HoneyDooSQL
 from kivy.animation import Animation
 from configparser import ConfigParser
@@ -40,6 +39,13 @@ class Refresh(Screen):
 class MainWindow(Screen):
     def on_pre_enter(self):
         self.ids.tasks.clear_widgets()
+        try:
+            c = config.mydb.cursor(buffered=True)
+            c.reset()
+        except:
+            config.mydb = HoneyDooSQL.dbSetup()
+
+        config.task = HoneyDooSQL.readTasks(config.mydb)
 
     def completeTask(self):
         try:
@@ -61,17 +67,10 @@ class MainWindow(Screen):
         pass
 
     def on_enter(self):
-        try:
-            c = config.mydb.cursor(buffered=True)
-            c.reset()
-        except:
-            config.mydb = HoneyDooSQL.dbSetup()
-
-        config.task = HoneyDooSQL.readTasks(config.mydb)
 
         i = 0
         for task in config.task:
-            btn = TaskItem(size_hint_y=None, height='70sp')
+            btn = TaskItem(size_hint_y=None, height='100sp')
             priorityText = '[color=66ffb3][u]PRIORITY[/u][/color]\n' + '[b]'+checkPriority(task['PRIORITY'])+'[/b]'
             statusText = '[color=66ffb3][u]STATUS[/u][/color]\n' + '[b]'+checkStatus(task['STATUS'])+'[/b]'
             priorityColor = setPriorityColor(task['PRIORITY'])
@@ -110,17 +109,17 @@ class TaskPopUp(Popup):
 
 class TaskItem(GridLayout):
     def shrink(self, instance):
-        animation = Animation(height=(kivy.metrics.sp(70)), duration = .5)
+        animation = Animation(height=(kivy.metrics.sp(100)), duration = .5)
         animation.start(instance)
 
     def grow(self, instance):
-        animation = Animation(height=(kivy.metrics.sp(200)), duration = .3)
+        animation = Animation(height=(kivy.metrics.sp(300)), duration = .5)
         config.displayTask = self.ids.task_id.text
         animation.start(instance)
         
     def on_touch_down(self, touch):
         if self.collide_point(*touch.pos):
-            if self.height < kivy.metrics.sp(71):
+            if self.height < kivy.metrics.sp(201):
                 self.grow(self)
                 self.ids.dropdown.grow(self.ids.dropdown)
             else:
@@ -133,7 +132,7 @@ class TaskItem(GridLayout):
     
 class TaskDropdown(Label):
     def grow(self, instance):
-        animation = Animation(size_hint_y=2, height=(kivy.metrics.sp(130)), duration = .3) + Animation(opacity = 1, duration = .2)
+        animation = Animation(size_hint_y=2, height=(kivy.metrics.sp(200)), duration = .3) + Animation(opacity = 1, duration = .2)
         animation.start(instance)
 
     def shrink(self, instance):
@@ -143,10 +142,8 @@ class TaskDropdown(Label):
 
 class TaskList(Screen):
 
-    def on_leave(self):
+    def on_pre_enter(self):
         self.ids.tasks.clear_widgets()
-
-    def on_enter(self):
         try:
             c = config.mydb.cursor(buffered=True)
             c.reset()
@@ -155,9 +152,11 @@ class TaskList(Screen):
 
         config.task = HoneyDooSQL.readAllTasks(config.mydb)
 
+    def on_enter(self):
+
         i = 0
         for task in config.task:
-            btn = TaskItem(size_hint_y=None, height='70sp')
+            btn = TaskItem(size_hint_y=None, height='100sp')
 
             priorityText = '[color=66ffb3][u]PRIORITY[/u][/color]\n' + '[b]'+checkPriority(task['PRIORITY'])+'[/b]'
             statusText = '[color=66ffb3][u]STATUS[/u][/color]\n' + '[b]'+checkStatus(task['STATUS'])+'[/b]'
@@ -202,7 +201,7 @@ def sendConfirmEmail():
 
     try:
         with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtpObj:
-            smtpObj.login(sender, 'NOTREALPASS')
+            smtpObj.login(sender, 'NOTREALEMAILPASS')
             smtpObj.send_message(msg)
             EmailPopUp()
     except:

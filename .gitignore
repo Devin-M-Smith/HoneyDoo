@@ -11,6 +11,7 @@ __pycache__/
 .ini
 develop-eggs/
 dist/
+old/
 downloads/
 eggs/
 .eggs/

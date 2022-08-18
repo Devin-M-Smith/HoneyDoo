@@ -10,7 +10,7 @@ def dbSetup():
         host = "devin-m-smith.com",
         port = 3306,
         user = "HoneyDoo",
-        passwd = "NOTREALPASS",
+        passwd = "NOTREALSQLPASS",
         database = 'honeydoo',
         connect_timeout = 15,
         auth_plugin='mysql_native_password'
@@ -20,7 +20,7 @@ def dbSetup():
         host = "10.0.0.147",
         port = 3306,
         user = "HoneyDoo",
-        passwd = "NOTREALPASS",
+        passwd = "NOTREALSQLPASS",
         database = 'honeydoo',
         connect_timeout = 3,
         auth_plugin='mysql_native_password'
@@ -29,7 +29,7 @@ def dbSetup():
         mydb = mysql.connector.connect(
         host = "localhost",
         user = "HoneyDoo",
-        passwd = "NOTREALPASS",
+        passwd = "NOTREALSQLPASS",
         database = 'honeydoo',
         connect_timeout = 3,
         auth_plugin='mysql_native_password'
