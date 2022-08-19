@@ -7,10 +7,12 @@ __pycache__/
 *.so
 
 # Distribution / packaging
+*.ini
 .Python
 .ini
 develop-eggs/
 dist/
+old/
 downloads/
 eggs/
 .eggs/

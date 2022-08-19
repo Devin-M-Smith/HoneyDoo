@@ -10,7 +10,7 @@ def dbSetup():
         host = "devin-m-smith.com",
         port = 3306,
         user = "HoneyDoo",
-        passwd = "NOTREALPASS",
+        passwd = "NOTREALSQLPASS",
         database = 'honeydoo',
         connect_timeout = 15,
         auth_plugin='mysql_native_password'
@@ -20,7 +20,7 @@ def dbSetup():
         host = "10.0.0.147",
         port = 3306,
         user = "HoneyDoo",
-        passwd = "NOTREALPASS",
+        passwd = "NOTREALSQLPASS",
         database = 'honeydoo',
         connect_timeout = 3,
         auth_plugin='mysql_native_password'
@@ -29,7 +29,7 @@ def dbSetup():
         mydb = mysql.connector.connect(
         host = "localhost",
         user = "HoneyDoo",
-        passwd = "NOTREALPASS",
+        passwd = "NOTREALSQLPASS",
         database = 'honeydoo',
         connect_timeout = 3,
         auth_plugin='mysql_native_password'
@@ -49,12 +49,35 @@ def signIn(mydb, email, psswd):
     userMatch = c.fetchall()
     user = []
     user.append(userMatch[0])
+    if(user[0]['PAIRED']):
+        config.paireduid = str(user[0]['PAIRED'])
     config.email = str(user[0]['EMAIL'])
     config.name = str(user[0]['NAME'])
     config.uid = str(user[0]['UID'])
     c.reset()
     return str(user[0]['UID'])
 
+def updatePaired(mydb, UID):
+    mydb.commit()
+    c = mydb.cursor(dictionary=True)
+    c.execute("""
+        UPDATE USERS
+        SET PAIRED = %s
+        WHERE UID = %s;
+    """, (UID, config.uid))
+    mydb.commit()
+    c.reset()
+
+def unPair(mydb):
+    mydb.commit()
+    c = mydb.cursor(dictionary=True)
+    c.execute("""
+        UPDATE USERS
+        SET PAIRED = NULL
+        WHERE UID = %s;
+    """, (config.uid, ))
+    mydb.commit()
+    c.reset()
 
 def getUser(mydb, UID):
     mydb.commit()
@@ -77,7 +100,7 @@ def readAllTasks(mydb):
         WHERE UID = %s
         OR UID = %s
         ORDER BY DATE_CREATED DESC, PRIORITY DESC;
-    """, (config.uid, config.uid)) # 1 is open, 0 is closed
+    """, (config.uid, config.paireduid)) # 1 is open, 0 is closed
 
     records = c.fetchall()
     task = []

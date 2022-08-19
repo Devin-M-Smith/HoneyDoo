@@ -7,7 +7,6 @@ from kivy.uix.popup import Popup
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.label import Label
 from kivy.uix.floatlayout import FloatLayout
-import tools.checkSave as checkSave
 import tools.HoneyDooSQL as HoneyDooSQL
 from kivy.animation import Animation
 from configparser import ConfigParser
@@ -39,7 +38,27 @@ class Refresh(Screen):
 
 class MainWindow(Screen):
     def on_pre_enter(self):
+        self.ids.menu.text = 'v MENU v'
         self.ids.tasks.clear_widgets()
+        try:
+            c = config.mydb.cursor(buffered=True)
+            c.reset()
+        except:
+            config.mydb = HoneyDooSQL.dbSetup()
+
+        config.task = HoneyDooSQL.readTasks(config.mydb)
+    
+
+    def menuSelect(self, item):
+        if item == 'COMPLETE TASK':
+            self.ids.menu.text = 'v MENU v'
+            self.completeTask()
+            return 'main'
+        elif item == 'SETTINGS':
+            self.ids.menu.text = 'v MENU v'
+            return 'customSettings'
+        else:
+            return 'main'
 
     def completeTask(self):
         try:
@@ -61,17 +80,10 @@ class MainWindow(Screen):
         pass
 
     def on_enter(self):
-        try:
-            c = config.mydb.cursor(buffered=True)
-            c.reset()
-        except:
-            config.mydb = HoneyDooSQL.dbSetup()
-
-        config.task = HoneyDooSQL.readTasks(config.mydb)
 
         i = 0
         for task in config.task:
-            btn = TaskItem(size_hint_y=None, height='70sp')
+            btn = TaskItem(size_hint_y=None, height='100sp')
             priorityText = '[color=66ffb3][u]PRIORITY[/u][/color]\n' + '[b]'+checkPriority(task['PRIORITY'])+'[/b]'
             statusText = '[color=66ffb3][u]STATUS[/u][/color]\n' + '[b]'+checkStatus(task['STATUS'])+'[/b]'
             priorityColor = setPriorityColor(task['PRIORITY'])
@@ -110,17 +122,17 @@ class TaskPopUp(Popup):
 
 class TaskItem(GridLayout):
     def shrink(self, instance):
-        animation = Animation(height=(kivy.metrics.sp(70)), duration = .5)
+        animation = Animation(height=(kivy.metrics.sp(100)), duration = .5)
         animation.start(instance)
 
     def grow(self, instance):
-        animation = Animation(height=(kivy.metrics.sp(200)), duration = .3)
+        animation = Animation(height=(kivy.metrics.sp(300)), duration = .5)
         config.displayTask = self.ids.task_id.text
         animation.start(instance)
         
     def on_touch_down(self, touch):
         if self.collide_point(*touch.pos):
-            if self.height < kivy.metrics.sp(71):
+            if self.height < kivy.metrics.sp(201):
                 self.grow(self)
                 self.ids.dropdown.grow(self.ids.dropdown)
             else:
@@ -133,7 +145,7 @@ class TaskItem(GridLayout):
     
 class TaskDropdown(Label):
     def grow(self, instance):
-        animation = Animation(size_hint_y=2, height=(kivy.metrics.sp(130)), duration = .3) + Animation(opacity = 1, duration = .2)
+        animation = Animation(size_hint_y=2, height=(kivy.metrics.sp(200)), duration = .3) + Animation(opacity = 1, duration = .2)
         animation.start(instance)
 
     def shrink(self, instance):
@@ -141,12 +153,88 @@ class TaskDropdown(Label):
         animation.start(instance)
     pass
 
+class PairSetting(GridLayout):
+    pass
+
+class UIDSetting(GridLayout):
+    pass
+
+class RefreshSettings(Screen):
+    pass
+
+class SettingsWindow(Screen):
+    def on_pre_enter(self):
+        self.ids.settingFields.clear_widgets()
+        uidField = UIDSetting(size_hint_y=None, height='60sp')
+        uidField.ids.uid.text = config.uid
+        pairedField = PairSetting(size_hint_y=None, height='50sp')
+        if(config.paireduid.isdigit()):
+            pairedField.ids.paired.text = config.pairedName
+        self.ids.settingFields.add_widget(uidField)
+        self.ids.settingFields.add_widget(pairedField)
+
+    def updatePaired(self):
+        pairedPopUp()
+    pass
+
+class UpdatePaired(Popup):
+    def paired(self, code):
+        if len(code) > 7:
+            try:
+                config.result = HoneyDooSQL.getUser(config.mydb, code)
+                con.read('config.ini')
+                con['PARTNER'] = {}
+                con['PARTNER']['name'] = config.result
+                con['PARTNER']['uid'] = code
+                config.pairedName = config.result
+                config.paireduid = code
+                HoneyDooSQL.updatePaired(config.mydb, code)
+                with open('config.ini','w') as configfile:
+                    con.write(configfile)
+                config.result = code
+                return 'refreshSettings'
+            except:
+                config.result = 'User Not Found'
+        else:
+            if code == '0':
+                HoneyDooSQL.unPair(config.mydb)
+                con.read('config.ini')
+                con.remove_section('PARTNER')
+                with open('config.ini','w') as configfile:
+                    con.write(configfile)
+                config.pairedName = ''
+                config.paireduid = ''
+                return 'refreshSettings'
+            else:
+                config.result = 'Invalid User Pairing Code'
+
+        if (config.result.isdigit()):
+            return 'main'
+        else:
+            global dataError
+            dataError = DataError()
+            errorPopUp(config.result)
+            return 'customSettings'
+    pass
+
+def pairedPopUp():
+    window = UpdatePaired(
+        title = "Pair New User",
+        title_color = (.4, 1, .7, 1),
+        title_size = '28sp', 
+        separator_color = (0, .4, .2, 1),
+        background_color = (0, .4, .2, .5),
+        size_hint = (None, None), 
+        size = ('350sp', '150sp'))
+    window.open()
+    pass
+
+
 class TaskList(Screen):
 
-    def on_leave(self):
+    def on_pre_enter(self):
         self.ids.tasks.clear_widgets()
-
-    def on_enter(self):
+        self.ids.topLabel.text = 'Please Wait...'
         try:
             c = config.mydb.cursor(buffered=True)
             c.reset()
@@ -155,9 +243,11 @@ class TaskList(Screen):
 
         config.task = HoneyDooSQL.readAllTasks(config.mydb)
 
+    def on_enter(self):
+
         i = 0
         for task in config.task:
-            btn = TaskItem(size_hint_y=None, height='70sp')
+            btn = TaskItem(size_hint_y=None, height='100sp')
 
             priorityText = '[color=66ffb3][u]PRIORITY[/u][/color]\n' + '[b]'+checkPriority(task['PRIORITY'])+'[/b]'
             statusText = '[color=66ffb3][u]STATUS[/u][/color]\n' + '[b]'+checkStatus(task['STATUS'])+'[/b]'
@@ -184,6 +274,7 @@ class TaskList(Screen):
             btn.ids.dropdown.opacity = 0
             self.ids.tasks.add_widget(btn)
             i += 1
+        self.ids.topLabel.text = 'Full Task List'
     pass
 
 
@@ -202,7 +293,7 @@ def sendConfirmEmail():
 
     try:
         with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtpObj:
-            smtpObj.login(sender, 'NOTREALPASS')
+            smtpObj.login(sender, 'NOTREALEMAILPASS')
             smtpObj.send_message(msg)
             EmailPopUp()
     except:
@@ -257,17 +348,27 @@ class SignIn(Screen):
             config.result = HoneyDooSQL.signIn(config.mydb, email, psswd)
         except:
             config.result = 'User Not Found'
-
+        global dataError
         if (config.result.isdigit()):
             con['USER'] = {}
             con['USER']['uid'] = config.result
             con['USER']['email'] = config.email.upper()
             con['USER']['name'] = config.name.upper()
+            if (config.paireduid.isdigit()):
+                try:
+                    config.pairedName = HoneyDooSQL.getUser(config.mydb, config.paireduid)
+                    con['PARTNER'] = {}
+                    con['PARTNER']['uid'] = config.paireduid
+                    con['PARTNER']['name'] = config.pairedName.upper()
+                except:
+                    config.result = 'Failed to get Paired User'
+                    dataError = DataError()
+                    errorPopUp(config.result)
+
             with open('config.ini','w') as configfile:
                 con.write(configfile)
             return 'main'
         else:
-            global dataError
             dataError = DataError()
             errorPopUp(config.result)
             return 'sign'
