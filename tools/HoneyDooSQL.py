@@ -57,6 +57,27 @@ def signIn(mydb, email, psswd):
     c.reset()
     return str(user[0]['UID'])
 
+def updatePaired(mydb, UID):
+    mydb.commit()
+    c = mydb.cursor(dictionary=True)
+    c.execute("""
+        UPDATE USERS
+        SET PAIRED = %s
+        WHERE UID = %s;
+    """, (UID, config.uid))
+    mydb.commit()
+    c.reset()
+
+def unPair(mydb):
+    mydb.commit()
+    c = mydb.cursor(dictionary=True)
+    c.execute("""
+        UPDATE USERS
+        SET PAIRED = NULL
+        WHERE UID = %s;
+    """, (config.uid, ))
+    mydb.commit()
+    c.reset()
 
 def getUser(mydb, UID):
     mydb.commit()

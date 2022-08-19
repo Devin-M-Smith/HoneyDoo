@@ -55,9 +55,8 @@ class MainWindow(Screen):
             self.completeTask()
             return 'main'
         elif item == 'SETTINGS':
-            print('settings selected')
             self.ids.menu.text = 'v MENU v'
-            return 'main'
+            return 'customSettings'
         else:
             return 'main'
 
@@ -157,17 +156,85 @@ class TaskDropdown(Label):
 class PairSetting(GridLayout):
     pass
 
+class UIDSetting(GridLayout):
+    pass
+
+class RefreshSettings(Screen):
+    pass
+
 class SettingsWindow(Screen):
     def on_pre_enter(self):
-        pair = PairSetting()
-        self.ids.settings.add_widget(pair)
-        
+        self.ids.settingFields.clear_widgets()
+        uidField = UIDSetting(size_hint_y=None, height='60sp')
+        uidField.ids.uid.text = config.uid
+        pairedField = PairSetting(size_hint_y=None, height='50sp')
+        if(config.paireduid.isdigit()):
+            pairedField.ids.paired.text = config.pairedName
+        self.ids.settingFields.add_widget(uidField)
+        self.ids.settingFields.add_widget(pairedField)
+
+    def updatePaired(self):
+        pairedPopUp()
+    pass
+
+class UpdatePaired(Popup):
+    def paired(self, code):
+        if len(code) > 7:
+            try:
+                config.result = HoneyDooSQL.getUser(config.mydb, code)
+                con.read('config.ini')
+                con['PARTNER'] = {}
+                con['PARTNER']['name'] = config.result
+                con['PARTNER']['uid'] = code
+                config.pairedName = config.result
+                config.paireduid = code
+                HoneyDooSQL.updatePaired(config.mydb, code)
+                with open('config.ini','w') as configfile:
+                    con.write(configfile)
+                config.result = code
+                return 'refreshSettings'
+            except:
+                config.result = 'User Not Found'
+        else:
+            if code == '0':
+                HoneyDooSQL.unPair(config.mydb)
+                con.read('config.ini')
+                con.remove_section('PARTNER')
+                with open('config.ini','w') as configfile:
+                    con.write(configfile)
+                config.pairedName = ''
+                config.paireduid = ''
+                return 'refreshSettings'
+            else:
+                config.result = 'Invalid User Pairing Code'
+
+        if (config.result.isdigit()):
+            return 'main'
+        else:
+            global dataError
+            dataError = DataError()
+            errorPopUp(config.result)
+            return 'customSettings'
+    pass
+
+def pairedPopUp():
+    window = UpdatePaired(
+        title = "Pair New User",
+        title_color = (.4, 1, .7, 1),
+        title_size = '28sp', 
+        separator_color = (0, .4, .2, 1),
+        background_color = (0, .4, .2, .5),
+        size_hint = (None, None), 
+        size = ('350sp', '150sp'))
+    window.open()
+    pass
 
 
 class TaskList(Screen):
 
     def on_pre_enter(self):
         self.ids.tasks.clear_widgets()
+        self.ids.topLabel.text = 'Please Wait...'
         try:
             c = config.mydb.cursor(buffered=True)
             c.reset()
@@ -207,6 +274,7 @@ class TaskList(Screen):
             btn.ids.dropdown.opacity = 0
             self.ids.tasks.add_widget(btn)
             i += 1
+        self.ids.topLabel.text = 'Full Task List'
     pass
 
 

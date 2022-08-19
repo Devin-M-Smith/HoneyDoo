@@ -45,6 +45,41 @@
     color: .4, 1, .7, .2
     font_size: '24sp'
 
+<PairSetting@GridLayout+BackgroundColor>
+    color: 0, 0, 0, 1
+    bold: True
+    cols: 3
+    rows: 1
+    RegisterContent:
+        font_size: '15sp'
+        text: 'Paired With: '
+        size_hint_x: 
+    RegisterContent:
+        font_size: '15sp'
+        id: paired
+        halign: 'left'
+        text: 'NONE'
+    MenuItem:
+        size_hint_x: .6
+        text: 'CHANGE'
+        on_release:
+            Factory.get('SettingsWindow').updatePaired(self)
+
+
+<UIDSetting@GridLayout+BackgroundColor>
+    color: 0, 0, 0, 1
+    bold: True
+    cols: 2
+    rows: 1
+    RegisterContent:
+        font_size: '15sp'
+        text: 'PARING CODE: '
+        halign: 'right'
+    RegisterContent:
+        halign: 'left'
+        font_size: '15sp'
+        id: uid
+
 <RefreshLabel@Label+BackgroundColor>
     background_color: 0, .4, .2, 1
     color: .4, 1, .7, 1
@@ -223,6 +258,14 @@
     RefreshLabel:
         text: 'LOADING'
 
+<RefreshSettings>
+    name: 'refreshSettings'
+    on_enter:
+        app.root.current = 'customSettings'
+        root.manager.transition.direction = "up"
+    RefreshLabel:
+        text: 'LOADING'
+
 <MainWindow>
     name: 'main'
     BoxLayout:
@@ -268,7 +311,7 @@
     BoxLayout:
         orientation: 'vertical'
         RegisterContent:
-            text: 'Full Task List'
+            id: topLabel
             size_hint_y: .2
         ScrollView:
             GridLayout:
@@ -331,6 +374,30 @@
             on_release:
                 app.root.current = 'main'
                 root.manager.transition.direction = "up"
+
+<SettingsWindow>
+    name: 'customSettings'
+    BoxLayout:
+        orientation: 'vertical'
+        RegisterContent:
+            height: '60sp'
+            size_hint_y: None
+            text: 'SETTINGS'
+        ScrollView:
+            GridLayout:
+                cols: 1
+                size_hint_y: None
+                height: self.minimum_height
+                id: settingFields
+                valign: 'center'
+        BackButton:
+            size_hint_y: None
+            height: '60sp'
+            text: 'EXIT'
+            on_release:
+                app.root.current = 'main'
+                root.manager.transition.direction = "up"
+
 
 <SignIn>
     name: 'sign'
@@ -452,4 +519,26 @@
                 on_release:
                     root.dismiss()
                     app.root.current = root.confirm(code.text)
+                    app.root.transition.direction = "up"
+
+<UpdatePaired@Popup + BackgroundColor>
+    auto_dismiss: False
+    GridLayout:
+        rows: 2
+        cols: 1
+        Label:
+            color: .8, 1, .9, 1
+            text: "Please Enter New Paired Code\n(Enter 0 to un-pair)"
+            pos_hint: {"x": 0, "top": 0.3}
+        GridLayout:
+            cols: 2
+            size_hint_y: .8
+            Input:
+                id: code
+                size_hint_x: 2
+            MenuItem:
+                text: 'CONFIRM'
+                on_release:
+                    root.dismiss()
+                    app.root.current = root.paired(code.text)
                     app.root.transition.direction = "up"
