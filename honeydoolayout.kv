@@ -45,6 +45,12 @@
     color: .4, 1, .7, .2
     font_size: '24sp'
 
+<MenuButton@Button>
+    size_hint_x: None
+    size_hint_y: None
+    height: self.parent.height
+    width: self.height
+
 <PairSetting@GridLayout+BackgroundColor>
     color: 0, 0, 0, 1
     bold: True
@@ -59,11 +65,13 @@
         id: paired
         halign: 'left'
         text: 'NONE'
-    MenuItem:
-        size_hint_x: .6
-        text: 'CHANGE'
-        on_release:
-            Factory.get('SettingsWindow').updatePaired(self)
+    AnchorLayout:   
+        anchor_x: 'center'
+        size_hint_x: .5
+        MenuButton:
+            background_normal: 'assets/editPair.png'
+            on_release:
+                Factory.get('SettingsWindow').updatePaired(self)
 
 
 <UIDSetting@GridLayout+BackgroundColor>
@@ -270,26 +278,41 @@
     name: 'main'
     BoxLayout:
         orientation: 'vertical'
-        RegisterContent:
-            size_hint: None, None
-            height: '10sp'
-        GridLayout:
-            cols: 1
+        LoadContent:
+            cols: 5
             rows: 1
-            size_hint_y: .1
-            padding_x: '5sp'
-            HoneyDooSpinner:
-                id: menu
-                text: 'v MENU v'
-                values: ['CREATE NEW TASK', 'COMPLETE TASK', 'SETTINGS']
-                on_text:
-                    app.root.current = 'addTask' if(self.text == 'CREATE NEW TASK') else root.menuSelect(self.text)
-                    app.root.transition.direction = "down"
-                    
-
-        RegisterContent:
-            size_hint: None, None
-            height: '10sp'
+            size_hint_y: .12
+            AnchorLayout:
+                anchor_x: 'center'
+                MenuButton:
+                    background_normal: 'assets/newtask.png'
+                    on_release:
+                        app.root.current = 'addTask'
+                        root.manager.transition.direction = "down"
+            AnchorLayout:
+                anchor_x: 'center'
+                MenuButton:
+                    background_normal: 'assets/settings.png'
+                    on_release:
+                        app.root.current = 'customSettings'
+                        root.manager.transition.direction = "down"
+            AnchorLayout:
+                anchor_x: 'center'
+                MenuButton:
+                    background_normal: 'assets/edit.png'
+            AnchorLayout:
+                anchor_x: 'center'
+                MenuButton:
+                    background_normal: 'assets/checkbox.png'
+                    on_release:
+                        root.completeTask()
+            AnchorLayout:
+                anchor_x: 'center'
+                MenuButton:
+                    background_normal: 'assets/fullTask.png'
+                    on_release:
+                        app.root.current = 'tasklist'
+                        root.manager.transition.direction = 'left'
         ScrollView:
             GridLayout:
                 size_hint_y: None
@@ -297,13 +320,6 @@
                 cols: 1
                 id: tasks
                 spacing: '1sp'
-        BackButton:
-            text: 'Full Task List'
-            size_hint_y: None
-            height: '60sp'
-            on_release:
-                app.root.current = 'tasklist'
-                root.manager.transition.direction = 'left'
 
 
 <TaskList>

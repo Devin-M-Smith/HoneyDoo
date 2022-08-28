@@ -35,10 +35,11 @@ def setStatusColor(statusNumber):
 class Refresh(Screen):
     pass
 
+class RegisterContent(Label):
+    pass
 
 class MainWindow(Screen):
     def on_pre_enter(self):
-        self.ids.menu.text = 'v MENU v'
         self.ids.tasks.clear_widgets()
         try:
             c = config.mydb.cursor(buffered=True)
@@ -47,18 +48,6 @@ class MainWindow(Screen):
             config.mydb = HoneyDooSQL.dbSetup()
 
         config.task = HoneyDooSQL.readTasks(config.mydb)
-    
-
-    def menuSelect(self, item):
-        if item == 'COMPLETE TASK':
-            self.ids.menu.text = 'v MENU v'
-            self.completeTask()
-            return 'main'
-        elif item == 'SETTINGS':
-            self.ids.menu.text = 'v MENU v'
-            return 'customSettings'
-        else:
-            return 'main'
 
     def completeTask(self):
         try:
@@ -106,6 +95,9 @@ class MainWindow(Screen):
             btn.ids.dropdown.opacity = 0
             self.ids.tasks.add_widget(btn)
             i += 1
+        if i==0 :
+            startLabel = RegisterContent(size_hint_y=None, height='100sp', font_size='20sp', text="Click + to create a New Task")
+            self.ids.tasks.add_widget(startLabel)
     pass
 
 class TaskPopUp(Popup):
