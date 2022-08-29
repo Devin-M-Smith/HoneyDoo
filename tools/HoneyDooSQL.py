@@ -130,34 +130,17 @@ def readTasks(mydb):
         task.append(record)
     return task
 
-def readTasksOld(mydb):
-
+def readOneTask(mydb):
     mydb.commit()
     c = mydb.cursor(dictionary=True)
 
     c.execute("""
         SELECT * FROM TASKS
-        WHERE STATUS = 1
-        AND UID = %s
-        ORDER BY DATE_CREATED ASC, PRIORITY DESC
-    """, (config.uid, )) # 1 is open, 0 is closed
-
-    records = c.fetchall()
-    task = []
-
-    recordCount = 0
-    for record in records:
-        recordCount += 1
-
-    taskCount = 0
-    while taskCount < recordCount:
-        task.append(records[taskCount])
-        taskCount += 1
-
-    while taskCount < 10:
-        task.append({'UID': config.uid, 'NAME': '', 'TASK_ID': 0, 'TASK_NAME' : 'NO TASK', 'DESCRIPTION': 'NO TASK', 'STATUS': 0, 'PRIORITY': 0, 'DATE_CREATED': datetime.date.today()})
-        taskCount += 1
+        WHERE TASK_ID = %s
+    """, (config.displayTask, ))
+    task = c.fetchall()
     return task
+
 
 def writeTask(mydb, user, taskName, taskDetail, taskPriority):
 
@@ -176,7 +159,26 @@ def writeTask(mydb, user, taskName, taskDetail, taskPriority):
         return E
     except:
         return 'Unknown Error'
-    
+
+def updateTask(mydb, taskName, taskDetail, taskPriority, taskID):
+
+    c = mydb.cursor(dictionary=True)
+
+    try:
+        c.execute("""
+            UPDATE TASKS
+            SET TASK_NAME = %s,
+            DESCRIPTION = %s,
+            PRIORITY = %s
+            WHERE TASK_ID = %s;
+        """, (taskName.upper(), taskDetail.upper(), taskPriority, taskID))
+        mydb.commit()
+        return ''
+    except Error as E:
+        return E
+    except:
+        return 'Unknown Error'
+
 def completeTask(mydb, taskID):
 
     c = mydb.cursor(dictionary=True)

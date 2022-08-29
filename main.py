@@ -4,7 +4,7 @@ from kivy.uix.screenmanager import ScreenManager, Screen, FadeTransition, SlideT
 from kivy.clock import Clock
 import tools.checkSave as checkSave
 import tools.HoneyDooSQL as HoneyDooSQL
-from tools.screens import MainWindow, TaskList, Register, NewTask, Refresh, RefreshSettings, NoSave, SignIn, SettingsWindow
+from tools.screens import MainWindow, TaskList, Register, NewTask, Refresh, RefreshSettings, NoSave, SignIn, SettingsWindow, EditTask
 import tools.config as config
 from kivy.utils import platform
 
@@ -30,7 +30,7 @@ class LoadWindow(Screen):
                 self.ids.connect_status.text = 'Unable to Connect'
                 Clock.schedule_once(lambda dt: app.stop(), 7)
             else:
-                screens = [Register(), MainWindow(), TaskList(), NewTask(), Refresh(), RefreshSettings(), NoSave(), SignIn(), SettingsWindow()]
+                screens = [Register(), MainWindow(), TaskList(), NewTask(), Refresh(), RefreshSettings(), NoSave(), SignIn(), SettingsWindow(), EditTask()]
                 for screen in screens:
                     wm.add_widget(screen)
                 Clock.schedule_once(lambda dt: remove_splash_custom())
