@@ -300,6 +300,9 @@
                 anchor_x: 'center'
                 MenuButton:
                     background_normal: 'assets/edit.png'
+                    on_release:
+                        app.root.current = 'editTask'
+                        root.manager.transition.direction = "down"
             AnchorLayout:
                 anchor_x: 'center'
                 MenuButton:
@@ -313,6 +316,39 @@
                     on_release:
                         app.root.current = 'tasklist'
                         root.manager.transition.direction = 'left'
+        LoadContent:
+            cols: 5
+            rows: 1
+            size_hint_y: .04
+            AnchorLayout:
+                anchor_x: 'center'
+                anchor_y: 'top'
+                LoadByline:
+                    text: 'Add Task'
+                    font_size: '10sp'
+            AnchorLayout:
+                anchor_x: 'center'
+                LoadByline:
+                    text: 'Settings'
+                    font_size: '10sp'
+            AnchorLayout:
+                anchor_x: 'center'
+                LoadByline:
+                    text: 'Edit Task'
+                    font_size: '10sp'
+            AnchorLayout:
+                anchor_x: 'center'
+                LoadByline:
+                    text: 'Complete Task'
+                    font_size: '10sp'
+            AnchorLayout:
+                anchor_x: 'center'
+                LoadByline:
+                    text: 'All Tasks'
+                    font_size: '10sp'
+        Menu:
+            size_hint_y: None
+            height: '1sp'
         ScrollView:
             GridLayout:
                 size_hint_y: None
@@ -383,6 +419,49 @@
             text: "SUBMIT"
             on_release:
                 app.root.current = root.submitTask(assigned.text, task_name.text, description.text, priority.text)
+                root.manager.transition.direction = "up"
+        BackButton:
+            size_hint_y: .8
+            text: "GO BACK"
+            on_release:
+                app.root.current = 'main'
+                root.manager.transition.direction = "up"
+
+<EditTask>
+    name: 'editTask'
+    BoxLayout:
+        orientation: 'vertical'
+        padding: '4sp', '4sp'
+        NewTaskHead:
+            color: 0, 0, 0, 1
+            font_size: '40sp'
+            bold: True
+            text: 'UPDATE TASK'
+            id: header
+        MainDisplay:
+            cols: 1
+            rows: 10
+            spacing: 0, '4sp'
+            size_hint_y: 4
+            HoneyDooSpinner:
+                id: assigned
+            NewTaskInput:
+                id: task_name
+                hint_text: 'No Task Selected'
+                size_hint_y: 1.1
+            NewTaskInput:
+                id: description
+                multiline: True
+                hint_text: '\nPlease go back and select a task'
+                size_hint_y: 4
+            HoneyDooSpinner:
+                id: priority
+                values: ['LOW', 'NORMAL', 'HIGH', 'MAJOR']
+        SubmitButton:
+            size_hint_y: .8
+            text: "SUBMIT"
+            on_release:
+                app.root.current = root.submitTask(task_name.text, description.text, priority.text)
                 root.manager.transition.direction = "up"
         BackButton:
             size_hint_y: .8

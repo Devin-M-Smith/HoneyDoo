@@ -105,6 +105,7 @@ class TaskPopUp(Popup):
     def updateCompleteTask(self):
         result = HoneyDooSQL.completeTask(config.mydb, config.displayTask)
         if result == '':
+            config.displayTask = 0
             pass
         else:
             global dataError
@@ -451,7 +452,65 @@ class NewTask(Screen):
             errorPopUp(result)
             return 'addTask'
     pass
-        
+
+class EditTask(Screen):
+    def on_pre_enter(self):
+        print(config.displayTask)
+        self.ids.header.text = 'PLEASE WAIT...'
+        self.ids.assigned.text = 'NO ASSIGNEE'
+        self.ids.task_name.text = ''
+        self.ids.description.text = ''
+        self.ids.priority.text = 'NO PRIORITY'
+        if config.displayTask == 0:
+            self.ids.header.text = 'UPDATE TASK'
+        else:
+            try:
+                c = config.mydb.cursor(buffered=True)
+                c.reset()
+            except:
+                config.mydb = HoneyDooSQL.dbSetup()
+            task = HoneyDooSQL.readOneTask(config.mydb)
+            self.ids.assigned.text = HoneyDooSQL.getUser(config.mydb, task[0]['UID'])
+            self.ids.task_name.text = task[0]['TASK_NAME']
+            self.ids.description.text = task[0]['DESCRIPTION']
+            self.ids.priority.text = checkPriority(task[0]['PRIORITY'])
+            self.ids.header.text = 'UPDATE TASK'
+
+    def submitTask(self, task_name, description, priority):
+
+        try:
+            c = config.mydb.cursor(buffered=True)
+            c.reset()
+        except:
+            config.mydb = HoneyDooSQL.dbSetup()
+
+        try:
+            priority = self.ids.priority.values.index(priority)
+        except:
+            priority = -1
+
+        if (
+            task_name == ''
+            or
+            description == ''
+            or
+            priority == -1):
+            result = 'Please fill out all fields'
+        else:
+            if config.displayTask == 0:
+                result = 'No task selected. Please go back and select a task.'
+            else:
+                result = HoneyDooSQL.updateTask(config.mydb, task_name, description, priority, config.displayTask)
+        if result == '':
+            return 'main'
+        else:
+            global dataError
+            dataError = DataError()
+            errorPopUp(result)
+            return 'editTask'
+    pass
+
+
 class DataError(FloatLayout):
     pass
 
