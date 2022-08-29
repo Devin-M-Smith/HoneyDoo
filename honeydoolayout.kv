@@ -281,6 +281,36 @@
         LoadContent:
             cols: 5
             rows: 1
+            size_hint_y: .02
+            AnchorLayout:
+                anchor_x: 'center'
+                anchor_y: 'top'
+                LoadTitle:
+                    text: 'Add Task'
+                    font_size: '10sp'
+            AnchorLayout:
+                anchor_x: 'center'
+                LoadTitle:
+                    text: 'Settings'
+                    font_size: '10sp'
+            AnchorLayout:
+                anchor_x: 'center'
+                LoadTitle:
+                    text: 'Edit Task'
+                    font_size: '10sp'
+            AnchorLayout:
+                anchor_x: 'center'
+                LoadTitle:
+                    text: 'Complete Task'
+                    font_size: '10sp'
+            AnchorLayout:
+                anchor_x: 'center'
+                LoadTitle:
+                    text: 'All Tasks'
+                    font_size: '10sp'
+        LoadContent:
+            cols: 5
+            rows: 1
             size_hint_y: .12
             AnchorLayout:
                 anchor_x: 'center'
@@ -316,36 +346,6 @@
                     on_release:
                         app.root.current = 'tasklist'
                         root.manager.transition.direction = 'left'
-        LoadContent:
-            cols: 5
-            rows: 1
-            size_hint_y: .04
-            AnchorLayout:
-                anchor_x: 'center'
-                anchor_y: 'top'
-                LoadByline:
-                    text: 'Add Task'
-                    font_size: '10sp'
-            AnchorLayout:
-                anchor_x: 'center'
-                LoadByline:
-                    text: 'Settings'
-                    font_size: '10sp'
-            AnchorLayout:
-                anchor_x: 'center'
-                LoadByline:
-                    text: 'Edit Task'
-                    font_size: '10sp'
-            AnchorLayout:
-                anchor_x: 'center'
-                LoadByline:
-                    text: 'Complete Task'
-                    font_size: '10sp'
-            AnchorLayout:
-                anchor_x: 'center'
-                LoadByline:
-                    text: 'All Tasks'
-                    font_size: '10sp'
         Menu:
             size_hint_y: None
             height: '1sp'
