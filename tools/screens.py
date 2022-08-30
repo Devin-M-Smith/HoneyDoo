@@ -268,6 +268,8 @@ class TaskList(Screen):
             self.ids.tasks.add_widget(btn)
             i += 1
         self.ids.topLabel.text = 'Full Task List'
+    def on_leave(self):
+        config.displayTask = 0
     pass
 
 
