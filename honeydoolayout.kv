@@ -276,6 +276,8 @@
 
 <MainWindow>
     name: 'main'
+    on_enter:
+        root.updatePage()
     BoxLayout:
         orientation: 'vertical'
         LoadContent:
@@ -346,9 +348,32 @@
                     on_release:
                         app.root.current = 'tasklist'
                         root.manager.transition.direction = 'left'
-        Menu:
+        LoadContent:
+            cols: 1
+            size_hint_y: .1
+            LoadContent:
+                cols: 3
+                LoadTitle:
+                LoadTitle:
+                    size_hint_x: 1.4
+                    markup: True
+                    id: user
+                    font_size: '20sp'
+                AnchorLayout:
+                    anchor_x: 'right'
+                    MenuButton:
+                        background_normal: 'assets/swap.png'
+                        on_release:
+                            root.switchUser()
+        LoadContent:
+            cols: 1
+            size_hint_y: .1
+            LoadTitle:
+                id: selected
+                font_size: '16sp'
+        RegisterContent:
             size_hint_y: None
-            height: '1sp'
+            height: '2sp'
         ScrollView:
             GridLayout:
                 size_hint_y: None
@@ -461,7 +486,7 @@
             size_hint_y: .8
             text: "SUBMIT"
             on_release:
-                app.root.current = root.submitTask(task_name.text, description.text, priority.text)
+                app.root.current = root.submitTask(task_name.text, description.text, priority.text, assigned.text)
                 root.manager.transition.direction = "up"
         BackButton:
             size_hint_y: .8
@@ -637,3 +662,33 @@
                     root.dismiss()
                     app.root.current = root.paired(code.text)
                     app.root.transition.direction = "up"
+
+<UpdatePairedMain@Popup + BackgroundColor>
+    auto_dismiss: False
+    GridLayout:
+        rows: 2
+        cols: 1
+        Label:
+            color: .8, 1, .9, 1
+            text: "Please Enter New Paired Code\n(Enter 0 to un-pair)"
+            pos_hint: {"x": 0, "top": 0.3}
+        BoxLayout:
+            orientation: 'vertical'
+            size_hint_y: None
+            height: '60sp'
+            NewTaskInput:
+                id: code
+                font_size: '20sp'
+            GridLayout:
+                size_hint_y: None
+                height: '30sp'
+                cols: 2
+                MenuItem:
+                    text: 'CONFIRM'
+                    on_release:
+                        root.dismiss()
+                        root.paired(code.text)
+                MenuItem:
+                    text: 'CANCEL'
+                    on_release:
+                        root.dismiss()
