@@ -12,6 +12,12 @@
 
 ## Updates
 
+### v1.0.1 PATCH
+
+* Edit Task Page Updated
+* Removed user's ability to complete partner's tasks
+* Fixed Crash where user would select a task in Full Task List then click edit on Main Screen
+
 ### v0.1.0.0 RELEASE
 
 * Edit Task Page added
