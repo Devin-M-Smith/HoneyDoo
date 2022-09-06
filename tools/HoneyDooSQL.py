@@ -130,6 +130,24 @@ def readTasks(mydb):
         task.append(record)
     return task
 
+def readPartnerTasks(mydb):
+    mydb.commit()
+    c = mydb.cursor(dictionary=True)
+
+    c.execute("""
+        SELECT * FROM TASKS
+        WHERE STATUS = 1
+        AND UID = %s
+        ORDER BY DATE_CREATED ASC, PRIORITY DESC
+    """, (config.paireduid, )) # 1 is open, 0 is closed
+
+    records = c.fetchall()
+    task = []
+
+    for record in records:
+        task.append(record)
+    return task
+
 def readOneTask(mydb):
     mydb.commit()
     c = mydb.cursor(dictionary=True)
@@ -160,7 +178,7 @@ def writeTask(mydb, user, taskName, taskDetail, taskPriority):
     except:
         return 'Unknown Error'
 
-def updateTask(mydb, taskName, taskDetail, taskPriority, taskID):
+def updateTask(mydb, taskName, taskDetail, taskPriority, taskID, user):
 
     c = mydb.cursor(dictionary=True)
 
@@ -169,9 +187,10 @@ def updateTask(mydb, taskName, taskDetail, taskPriority, taskID):
             UPDATE TASKS
             SET TASK_NAME = %s,
             DESCRIPTION = %s,
-            PRIORITY = %s
+            PRIORITY = %s,
+            UID = %s
             WHERE TASK_ID = %s;
-        """, (taskName.upper(), taskDetail.upper(), taskPriority, taskID))
+        """, (taskName.upper(), taskDetail.upper(), taskPriority, user, taskID))
         mydb.commit()
         return ''
     except Error as E:

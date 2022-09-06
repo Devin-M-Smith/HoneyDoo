@@ -1,6 +1,8 @@
 mydb = None
 task = None
 displayTask = 0
+displayMode = 0
+taskTitle = ''
 name = ''
 email = ''
 uid = ''
